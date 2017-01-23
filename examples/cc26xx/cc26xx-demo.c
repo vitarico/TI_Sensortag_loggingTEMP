@@ -89,17 +89,14 @@
 #include "sys/etimer.h"
 #include "sys/ctimer.h"
 #include "dev/leds.h"
-#include "dev/watchdog.h"
-#include "random.h"
 #include "button-sensor.h"
-#include "batmon-sensor.h"
 #include "board-peripherals.h"
-#include "rf-core/rf-ble.h"
+#include "cc26xx-uart.h"
 
 #include "ti-lib.h"
+#define printf(x) 
+#define PRINTF(x)
 
-#include <stdio.h>
-#include <stdint.h>
 /*---------------------------------------------------------------------------*/
 #define CC26XX_DEMO_LOOP_INTERVAL       CLOCK_SECOND
 #define CC26XX_DEMO_LEDS_PERIODIC       LEDS_YELLOW
@@ -111,140 +108,152 @@
 #define CC26XX_DEMO_SENSOR_1     &button_left_sensor
 #define CC26XX_DEMO_SENSOR_2     &button_right_sensor
 
-#if BOARD_SENSORTAG
 #define CC26XX_DEMO_SENSOR_3     CC26XX_DEMO_SENSOR_NONE
 #define CC26XX_DEMO_SENSOR_4     CC26XX_DEMO_SENSOR_NONE
 #define CC26XX_DEMO_SENSOR_5     &reed_relay_sensor
-#elif BOARD_LAUNCHPAD
-#define CC26XX_DEMO_SENSOR_3     CC26XX_DEMO_SENSOR_NONE
-#define CC26XX_DEMO_SENSOR_4     CC26XX_DEMO_SENSOR_NONE
-#define CC26XX_DEMO_SENSOR_5     CC26XX_DEMO_SENSOR_NONE
-#else
-#define CC26XX_DEMO_SENSOR_3     &button_up_sensor
-#define CC26XX_DEMO_SENSOR_4     &button_down_sensor
-#define CC26XX_DEMO_SENSOR_5     &button_select_sensor
-#endif
 /*---------------------------------------------------------------------------*/
 static struct etimer et;
 /*---------------------------------------------------------------------------*/
 PROCESS(cc26xx_demo_process, "cc26xx demo process");
 AUTOSTART_PROCESSES(&cc26xx_demo_process);
 /*---------------------------------------------------------------------------*/
-#if BOARD_SENSORTAG
+
 /*---------------------------------------------------------------------------*/
 /*
  * Update sensor readings in a staggered fashion every SENSOR_READING_PERIOD
  * ticks + a random interval between 0 and SENSOR_READING_RANDOM ticks
  */
 #define SENSOR_READING_PERIOD CLOCK_SECOND * 10
-#define SENSOR_READING_RANDOM (CLOCK_SECOND << 4)
 
-static struct ctimer bmp_timer, opt_timer, hdc_timer, tmp_timer, mpu_timer;
+static struct ctimer opt_timer, hdc_timer;
 /*---------------------------------------------------------------------------*/
 
 //Arrays to store Data
 // Light
+
 uint16_t alight[2] = {0,0};
-// Altimeter/Pressure
-uint16_t abmp[4] = {0,0,0,0};
-// Temperature
-uint16_t atmp[4] = {0,0,0,0};
-// Humidity
-uint16_t ahdc[4] = {0,0,0,0};
-// Battery status and temperature
-uint16_t abat[4] = {0,0,0,0};
+uint16_t ahdc[4] = {0,0};
+
+
+static void write_byte(uint8_t data){
+
+  switch (data>>4){
+    case 0x0: cc26xx_uart_write_byte(48);
+    break;
+    case 0x1: cc26xx_uart_write_byte(49);
+    break;
+    case 0x2: cc26xx_uart_write_byte(50);
+    break;
+    case 0x3: cc26xx_uart_write_byte(51);
+    break;
+    case 0x4: cc26xx_uart_write_byte(52);
+    break;
+    case 0x5: cc26xx_uart_write_byte(53);
+    break;
+    case 0x6: cc26xx_uart_write_byte(54);
+    break;
+    case 0x7: cc26xx_uart_write_byte(55);
+    break;
+    case 0x8: cc26xx_uart_write_byte(56);
+    break;
+    case 0x9: cc26xx_uart_write_byte(57);
+    break; 
+    case 0xA: cc26xx_uart_write_byte(65);
+    break;
+    case 0xB: cc26xx_uart_write_byte(66);
+    break;
+    case 0xC: cc26xx_uart_write_byte(67);
+    break;
+    case 0xD: cc26xx_uart_write_byte(68);
+    break;
+    case 0xE: cc26xx_uart_write_byte(69);
+    break;
+    case 0xF: cc26xx_uart_write_byte(70);
+    break;
+    default: 
+    break;
+  }
+    switch (data&0xF){
+    case 0x0: cc26xx_uart_write_byte(48);
+    break;
+    case 0x1: cc26xx_uart_write_byte(49);
+    break;
+    case 0x2: cc26xx_uart_write_byte(50);
+    break;
+    case 0x3: cc26xx_uart_write_byte(51);
+    break;
+    case 0x4: cc26xx_uart_write_byte(52);
+    break;
+    case 0x5: cc26xx_uart_write_byte(53);
+    break;
+    case 0x6: cc26xx_uart_write_byte(54);
+    break;
+    case 0x7: cc26xx_uart_write_byte(55);
+    break;
+    case 0x8: cc26xx_uart_write_byte(56);
+    break;
+    case 0x9: cc26xx_uart_write_byte(57);
+    break; 
+    case 0xA: cc26xx_uart_write_byte(65);
+    break;
+    case 0xB: cc26xx_uart_write_byte(66);
+    break;
+    case 0xC: cc26xx_uart_write_byte(67);
+    break;
+    case 0xD: cc26xx_uart_write_byte(68);
+    break;
+    case 0xE: cc26xx_uart_write_byte(69);
+    break;
+    case 0xF: cc26xx_uart_write_byte(70);
+    break;
+    default: 
+    break;
+  }
+
+}
 
 static void print_data(void){
 
-  printf("OPT: Light=%d.%02d, BMP: %d.%02d, %d.%02d, TMP: %d.%03d, t%d.%03d, HDC: %d.%02d, HUMIDITY: %d.%02d, BAT: %d, %d", alight[0], alight[1], abmp[0], abmp[1], abmp[2],abmp[3], atmp[0],atmp[1],atmp[2],atmp[3],ahdc[0],ahdc[1],ahdc[2],ahdc[3],abat[0],abat[1]);
+  //light
+
+  write_byte(alight[0]>>8);
+  write_byte(alight[0]&0xFF); 
+  cc26xx_uart_write_byte(44);
+  write_byte(alight[1]&0xFF);
+  cc26xx_uart_write_byte(59);
+  //TMP
+
+  write_byte(ahdc[0]>>8);
+  write_byte(ahdc[0]&0xFF); 
+  cc26xx_uart_write_byte(44);
+  write_byte(ahdc[1]&0xFF);
+  cc26xx_uart_write_byte(59);
+
+  //HUM
+
+  write_byte(ahdc[2]>>8);
+  write_byte(ahdc[2]&0xFF); 
+  cc26xx_uart_write_byte(44);
+  write_byte(ahdc[3]&0xFF);
 
 }
 
-static void init_bmp_reading(void *not_used);
 static void init_opt_reading(void *not_used);
 static void init_hdc_reading(void *not_used);
-static void init_tmp_reading(void *not_used);
-static void init_mpu_reading(void *not_used);
-/*---------------------------------------------------------------------------*/
-static void
-print_mpu_reading(int reading)
-{
-  if(reading < 0) {
-    printf("-");
-    reading = -reading;
-  }
 
-  printf("%d.%02d", reading / 100, reading % 100);
-}
-/*---------------------------------------------------------------------------*/
-static void
-get_bmp_reading()
-{
-  int value;
-  clock_time_t next = SENSOR_READING_PERIOD +
-    (random_rand() % SENSOR_READING_RANDOM);
-
-  value = bmp_280_sensor.value(BMP_280_SENSOR_TYPE_PRESS);
-  if(value != CC26XX_SENSOR_READING_ERROR) {
-    abmp[0]=value/100;
-    abmp[1]=value%100;
-  } else {
-    printf("BAR: Pressure Read Error\n");
-  }
-
-  value = bmp_280_sensor.value(BMP_280_SENSOR_TYPE_TEMP);
-  if(value != CC26XX_SENSOR_READING_ERROR) {
-    abmp[2]=value/100;
-    abmp[3]=value%100;
-  } else {
-    printf("BAR: Temperature Read Error\n");
-  }
-
-  SENSORS_DEACTIVATE(bmp_280_sensor);
-
-  ctimer_set(&bmp_timer, next, init_bmp_reading, NULL);
-}
-/*---------------------------------------------------------------------------*/
-static void
-get_tmp_reading()
-{
-  int value;
-  clock_time_t next = SENSOR_READING_PERIOD +
-    (random_rand() % SENSOR_READING_RANDOM);
-
-  value = tmp_007_sensor.value(TMP_007_SENSOR_TYPE_ALL);
-
-  if(value == CC26XX_SENSOR_READING_ERROR) {
-    printf("TMP: Ambient Read Error\n");
-    return;
-  }
-
-  value = tmp_007_sensor.value(TMP_007_SENSOR_TYPE_AMBIENT);
-  atmp[0]=value/1000;
-  atmp[1]=value%1000;
-
-  value = tmp_007_sensor.value(TMP_007_SENSOR_TYPE_OBJECT);
-  atmp[2]=value/1000;
-  atmp[3]=value%1000;
-
-  SENSORS_DEACTIVATE(tmp_007_sensor);
-
-  ctimer_set(&tmp_timer, next, init_tmp_reading, NULL);
-}
 /*---------------------------------------------------------------------------*/
 static void
 get_hdc_reading()
 {
   int value;
-  clock_time_t next = SENSOR_READING_PERIOD +
-    (random_rand() % SENSOR_READING_RANDOM);
+  clock_time_t next = SENSOR_READING_PERIOD;
 
   value = hdc_1000_sensor.value(HDC_1000_SENSOR_TYPE_TEMP);
   if(value != CC26XX_SENSOR_READING_ERROR) {
     ahdc[0]=value/100;
     ahdc[1]=value%100;
   } else {
-    printf("HDC: Temp Read Error\n");
+    //printf("HDC: Temp Read Error\n");
   }
 
   value = hdc_1000_sensor.value(HDC_1000_SENSOR_TYPE_HUMIDITY);
@@ -252,7 +261,7 @@ get_hdc_reading()
     ahdc[2]=value/100;
     ahdc[3]=value%100;
   } else {
-    printf("HDC: Humidity Read Error\n");
+    //printf("HDC: Humidity Read Error\n");
   }
 
   ctimer_set(&hdc_timer, next, init_hdc_reading, NULL);
@@ -262,68 +271,20 @@ static void
 get_light_reading()
 {
   int value;
-  clock_time_t next = SENSOR_READING_PERIOD +
-    (random_rand() % SENSOR_READING_RANDOM);
+  clock_time_t next = SENSOR_READING_PERIOD;
 
   value = opt_3001_sensor.value(0);
   if(value != CC26XX_SENSOR_READING_ERROR) {
     alight[0]=value/100;
     alight[1]=value%100;
   } else {
-    printf("OPT: Light Read Error\n");
+    //printf("OPT: Light Read Error\n");
   }
 
   /* The OPT will turn itself off, so we don't need to call its DEACTIVATE */
   ctimer_set(&opt_timer, next, init_opt_reading, NULL);
 }
-/*---------------------------------------------------------------------------*/
-static void
-get_mpu_reading()
-{
-  int value;
-  clock_time_t next = SENSOR_READING_PERIOD +
-    (random_rand() % SENSOR_READING_RANDOM);
 
-  printf("MPU Gyro: X=");
-  value = mpu_9250_sensor.value(MPU_9250_SENSOR_TYPE_GYRO_X);
-  print_mpu_reading(value);
-  printf(" deg/sec\n");
-
-  printf("MPU Gyro: Y=");
-  value = mpu_9250_sensor.value(MPU_9250_SENSOR_TYPE_GYRO_Y);
-  print_mpu_reading(value);
-  printf(" deg/sec\n");
-
-  printf("MPU Gyro: Z=");
-  value = mpu_9250_sensor.value(MPU_9250_SENSOR_TYPE_GYRO_Z);
-  print_mpu_reading(value);
-  printf(" deg/sec\n");
-
-  printf("MPU Acc: X=");
-  value = mpu_9250_sensor.value(MPU_9250_SENSOR_TYPE_ACC_X);
-  print_mpu_reading(value);
-  printf(" G\n");
-
-  printf("MPU Acc: Y=");
-  value = mpu_9250_sensor.value(MPU_9250_SENSOR_TYPE_ACC_Y);
-  print_mpu_reading(value);
-  printf(" G\n");
-
-  printf("MPU Acc: Z=");
-  value = mpu_9250_sensor.value(MPU_9250_SENSOR_TYPE_ACC_Z);
-  print_mpu_reading(value);
-  printf(" G\n");
-
-  SENSORS_DEACTIVATE(mpu_9250_sensor);
-
-  ctimer_set(&mpu_timer, next, init_mpu_reading, NULL);
-}
-/*---------------------------------------------------------------------------*/
-static void
-init_bmp_reading(void *not_used)
-{
-  SENSORS_ACTIVATE(bmp_280_sensor);
-}
 /*---------------------------------------------------------------------------*/
 static void
 init_opt_reading(void *not_used)
@@ -338,64 +299,10 @@ init_hdc_reading(void *not_used)
 }
 /*---------------------------------------------------------------------------*/
 static void
-init_tmp_reading(void *not_used)
-{
-  SENSORS_ACTIVATE(tmp_007_sensor);
-}
-/*---------------------------------------------------------------------------*/
-static void
-init_mpu_reading(void *not_used)
-{
-  mpu_9250_sensor.configure(SENSORS_ACTIVE, MPU_9250_SENSOR_TYPE_ALL);
-}
-#endif
-/*---------------------------------------------------------------------------*/
-static void
-get_sync_sensor_readings(void)
-{
-  int value;
-
-  printf("-----------------------------------------\n");
-
-  value = batmon_sensor.value(BATMON_SENSOR_TYPE_TEMP);
-  printf("Bat: Temp=%d C\n", value);
-
-  value = batmon_sensor.value(BATMON_SENSOR_TYPE_VOLT);
-  printf("Bat: Volt=%d mV\n", (value * 125) >> 5);
-
-#if BOARD_SMARTRF06EB
-  SENSORS_ACTIVATE(als_sensor);
-
-  value = als_sensor.value(0);
-  printf("ALS: %d raw\n", value);
-
-  SENSORS_DEACTIVATE(als_sensor);
-#endif
-
-  return;
-}
-/*---------------------------------------------------------------------------*/
-static void
-init_sensors(void)
-{
-#if BOARD_SENSORTAG
-  SENSORS_ACTIVATE(reed_relay_sensor);
-#endif
-
-  SENSORS_ACTIVATE(batmon_sensor);
-}
-/*---------------------------------------------------------------------------*/
-static void
 init_sensor_readings(void)
 {
-#if BOARD_SENSORTAG
   SENSORS_ACTIVATE(hdc_1000_sensor);
-  SENSORS_ACTIVATE(tmp_007_sensor);
   SENSORS_ACTIVATE(opt_3001_sensor);
-  SENSORS_ACTIVATE(bmp_280_sensor);
-
-  init_mpu_reading(NULL);
-#endif
 }
 /*---------------------------------------------------------------------------*/
 PROCESS_THREAD(cc26xx_demo_process, ev, data)
@@ -405,14 +312,7 @@ PROCESS_THREAD(cc26xx_demo_process, ev, data)
 
   printf("CC26XX demo\n");
 
-  init_sensors();
-
-  /* Init the BLE advertisement daemon */
-  rf_ble_beacond_config(0, BOARD_STRING);
-  rf_ble_beacond_start();
-
   etimer_set(&et, CC26XX_DEMO_LOOP_INTERVAL);
-  get_sync_sensor_readings();
   init_sensor_readings();
 
   while(1) {
@@ -422,51 +322,17 @@ PROCESS_THREAD(cc26xx_demo_process, ev, data)
     if(ev == PROCESS_EVENT_TIMER) {
       if(data == &et) {
         leds_toggle(CC26XX_DEMO_LEDS_PERIODIC);
-
-        get_sync_sensor_readings();
-
         etimer_set(&et, CC26XX_DEMO_LOOP_INTERVAL);
       }
     } else if(ev == sensors_event) {
       if(data == CC26XX_DEMO_SENSOR_1) {
         print_data();
-        printf("Left: Pin %d, press duration %d clock ticks\n",
-               (CC26XX_DEMO_SENSOR_1)->value(BUTTON_SENSOR_VALUE_STATE),
-               (CC26XX_DEMO_SENSOR_1)->value(BUTTON_SENSOR_VALUE_DURATION));
-
-        if((CC26XX_DEMO_SENSOR_1)->value(BUTTON_SENSOR_VALUE_DURATION) >
-           CLOCK_SECOND) {
-          printf("Long button press!\n");
-        }
-
         leds_toggle(CC26XX_DEMO_LEDS_BUTTON);
-      } else if(data == CC26XX_DEMO_SENSOR_3) {
-        printf("Up\n");
-      } else if(data == CC26XX_DEMO_SENSOR_4) {
-        printf("Down\n");
-      } else if(data == CC26XX_DEMO_SENSOR_5) {
-#if BOARD_SENSORTAG
-        if(buzzer_state()) {
-          buzzer_stop();
-        } else {
-          buzzer_start(1000);
-        }
-      } else if(ev == sensors_event && data == &bmp_280_sensor) {
-        get_bmp_reading();
-      } else if(ev == sensors_event && data == &opt_3001_sensor) {
+      }  else if(ev == sensors_event && data == &opt_3001_sensor) {
         get_light_reading();
       } else if(ev == sensors_event && data == &hdc_1000_sensor) {
         get_hdc_reading();
-      } else if(ev == sensors_event && data == &tmp_007_sensor) {
-        get_tmp_reading();
-      } else if(ev == sensors_event && data == &mpu_9250_sensor) {
-        get_mpu_reading();
-#elif BOARD_SMARTRF06EB
-        printf("Sel: Pin %d, press duration %d clock ticks\n",
-               button_select_sensor.value(BUTTON_SENSOR_VALUE_STATE),
-               button_select_sensor.value(BUTTON_SENSOR_VALUE_DURATION));
-#endif
-      }
+      } 
     }
   }
 

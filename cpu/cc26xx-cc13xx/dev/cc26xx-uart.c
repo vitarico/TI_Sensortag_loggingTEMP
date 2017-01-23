@@ -305,6 +305,7 @@ cc26xx_uart_write_byte(uint8_t c)
 
   if(accessible() == false) {
     enable();
+    printf("test");
   }
 
   ti_lib_uart_char_put(UART0_BASE, c);
