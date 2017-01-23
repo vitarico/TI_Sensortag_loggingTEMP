@@ -64,8 +64,8 @@ static const struct packetbuf_attrlist attributes[] =
 
 #define DEBUG 0
 #if DEBUG
-#include <stdio.h>
-#define PRINTF(...) printf(__VA_ARGS__)
+//#include <stdio.h>
+//#define PRINTF(...) printf(__VA_ARGS__)
 #else
 #define PRINTF(...)
 #endif

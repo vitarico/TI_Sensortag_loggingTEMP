@@ -64,8 +64,8 @@ static const uint8_t bitmask[9] = { 0x00, 0x80, 0xc0, 0xe0, 0xf0,
 
 #define DEBUG 0
 #if DEBUG
-#include <stdio.h>
-#define PRINTF(...) printf(__VA_ARGS__)
+//#include <stdio.h>
+//#define PRINTF(...) printf(__VA_ARGS__)
 #else
 #define PRINTF(...)
 #endif

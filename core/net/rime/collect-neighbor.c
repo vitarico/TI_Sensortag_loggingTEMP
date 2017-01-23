@@ -43,7 +43,7 @@
  */
 
 #include <limits.h>
-#include <stdio.h>
+//#include <stdio.h>
 
 #include "contiki.h"
 #include "lib/memb.h"
@@ -71,8 +71,8 @@ MEMB(collect_neighbors_mem, struct collect_neighbor, MAX_COLLECT_NEIGHBORS);
 
 #define DEBUG 0
 #if DEBUG
-#include <stdio.h>
-#define PRINTF(...) printf(__VA_ARGS__)
+//#include <stdio.h>
+//#define PRINTF(...) printf(__VA_ARGS__)
 #else
 #define PRINTF(...)
 #endif

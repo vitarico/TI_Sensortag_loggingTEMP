@@ -67,15 +67,15 @@
 #include "net/ip/uip-debug.h"
 
 #include <string.h> /* for memcpy() */
-#include <stdio.h> /* for printf() */
+//#include <stdio.h> /* for printf() */
 
 #define DEBUG 0
 
 #if DEBUG
-#undef PRINTF
-#define PRINTF(...) printf(__VA_ARGS__)
+//#undef PRINTF
+//#define PRINTF(...) printf(__VA_ARGS__)
 #else /* DEBUG */
-#define PRINTF(...)
+//#define PRINTF(...)
 #endif /* DEBUG */
 
 struct ipv6_hdr {
@@ -186,7 +186,7 @@ ip64_init(void)
   uip_ipaddr(&ipv4_broadcast_addr, 255,255,255,255);
   ip64_hostaddr_configured = 0;
 
-  PRINTF("ip64_init\n");
+  //PRINTF("ip64_init\n");
   IP64_ETH_DRIVER.init();
 #if IP64_DHCP
   ip64_ipv4_dhcp_init();
@@ -196,7 +196,7 @@ ip64_init(void)
      host. We'll just pick the first one we find in our list. */
   for(i = 0; i < UIP_DS6_ADDR_NB; i++) {
     state = uip_ds6_if.addr_list[i].state;
-    PRINTF("i %d used %d\n", i, uip_ds6_if.addr_list[i].isused);
+    //PRINTF("i %d used %d\n", i, uip_ds6_if.addr_list[i].isused);
     if(uip_ds6_if.addr_list[i].isused &&
        (state == ADDR_TENTATIVE || state == ADDR_PREFERRED)) {
       ip64_set_ipv6_address(&uip_ds6_if.addr_list[i].ipaddr);
@@ -249,11 +249,11 @@ ip64_set_ipv4_address(const uip_ip4addr_t *addr, const uip_ip4addr_t *netmask)
   ip64_set_hostaddr(addr);
   ip64_set_netmask(netmask);
 
-  PRINTF("ip64_set_ipv4_address: configuring address %d.%d.%d.%d/%d.%d.%d.%d\n",
-	 ip64_hostaddr.u8[0], ip64_hostaddr.u8[1],
-	 ip64_hostaddr.u8[2], ip64_hostaddr.u8[3],
-	 ip64_netmask.u8[0], ip64_netmask.u8[1],
-	 ip64_netmask.u8[2], ip64_netmask.u8[3]);
+  //PRINTF("ip64_set_ipv4_address: configuring address %d.%d.%d.%d/%d.%d.%d.%d\n",
+	// ip64_hostaddr.u8[0], ip64_hostaddr.u8[1],
+	// ip64_hostaddr.u8[2], ip64_hostaddr.u8[3],
+	// ip64_netmask.u8[0], ip64_netmask.u8[1],
+	// ip64_netmask.u8[2], ip64_netmask.u8[3]);
 }
 /*---------------------------------------------------------------------------*/
 void
@@ -262,9 +262,9 @@ ip64_set_ipv6_address(const uip_ip6addr_t *addr)
   ip64_addr_copy6(&ipv6_local_address, (const uip_ip6addr_t *)addr);
   ipv6_local_address_configured = 1;
 #if DEBUG
-  PRINTF("ip64_set_ipv6_address: configuring address ");
+  //PRINTF("ip64_set_ipv6_address: configuring address ");
   uip_debug_ipaddr_print(addr);
-  PRINTF("\n");
+  //PRINTF("\n");
 #endif /* DEBUG */
 }
 /*---------------------------------------------------------------------------*/
@@ -377,7 +377,7 @@ ip64_6to4(const uint8_t *ipv6packet, const uint16_t ipv6packet_len,
   if((v6hdr->len[0] << 8) + v6hdr->len[1] <= ipv6packet_len) {
     ipv6len = (v6hdr->len[0] << 8) + v6hdr->len[1] + IPV6_HDRLEN;
   } else {
-    PRINTF("ip64_6to4: packet smaller than reported in IPv6 header, dropping\n");
+    //PRINTF("ip64_6to4: packet smaller than reported in IPv6 header, dropping\n");
     return 0;
   }
 
@@ -422,7 +422,7 @@ ip64_6to4(const uint8_t *ipv6packet, const uint16_t ipv6packet_len,
      header field. */
   switch(v6hdr->nxthdr) {
   case IP_PROTO_TCP:
-    PRINTF("ip64_6to4: TCP header\n");
+    //PRINTF("ip64_6to4: TCP header\n");
     v4hdr->proto = IP_PROTO_TCP;
 
     /* Compute and check the TCP checksum - since we're going to
@@ -430,13 +430,13 @@ ip64_6to4(const uint8_t *ipv6packet, const uint16_t ipv6packet_len,
        the first place. */
     if(ipv6_transport_checksum(ipv6packet, ipv6len,
                                IP_PROTO_TCP) != 0xffff) {
-      PRINTF("Bad TCP checksum, dropping packet\n");
+      //PRINTF("Bad TCP checksum, dropping packet\n");
     }
 
     break;
 
   case IP_PROTO_UDP:
-    PRINTF("ip64_6to4: UDP header\n");
+    //PRINTF("ip64_6to4: UDP header\n");
     v4hdr->proto = IP_PROTO_UDP;
 
     /* Check if this is a DNS request. If so, we should rewrite it
@@ -452,18 +452,18 @@ ip64_6to4(const uint8_t *ipv6packet, const uint16_t ipv6packet_len,
        the first place. */
     if(ipv6_transport_checksum(ipv6packet, ipv6len,
                                IP_PROTO_UDP) != 0xffff) {
-      PRINTF("Bad UDP checksum, dropping packet\n");
+      //PRINTF("Bad UDP checksum, dropping packet\n");
     }
     break;
 
   case IP_PROTO_ICMPV6:
-    PRINTF("ip64_6to4: ICMPv6 header\n");
+    //PRINTF("ip64_6to4: ICMPv6 header\n");
     v4hdr->proto = IP_PROTO_ICMPV4;
     /* Translate only ECHO_REPLY messages. */
     if(icmpv6hdr->type == ICMP6_ECHO_REPLY) {
       icmpv4hdr->type = ICMP_ECHO_REPLY;
     } else {
-      PRINTF("ip64_6to4: ICMPv6 mapping for type %d not implemented.\n",
+      //PRINTF("ip64_6to4: ICMPv6 mapping for type %d not implemented.\n",
 	     icmpv6hdr->type);
       return 0;
     }
@@ -473,7 +473,7 @@ ip64_6to4(const uint8_t *ipv6packet, const uint16_t ipv6packet_len,
     /* We did not recognize the next header, and we do not attempt to
        translate something we do not understand, so we return 0 to
        indicate that no successful translation could be made. */
-    PRINTF("ip64_6to4: Could not convert IPv6 next hop %d to an IPv4 protocol number.\n",
+    //PRINTF("ip64_6to4: Could not convert IPv6 next hop %d to an IPv4 protocol number.\n",
 	   v6hdr->nxthdr);
     return 0;
   }
@@ -490,9 +490,9 @@ ip64_6to4(const uint8_t *ipv6packet, const uint16_t ipv6packet_len,
   if(ip64_addr_6to4(&v6hdr->destipaddr,
 		    &v4hdr->destipaddr) == 0) {
 #if DEBUG
-    PRINTF("ip64_6to4: Could not convert IPv6 destination address.\n");
+    //PRINTF("ip64_6to4: Could not convert IPv6 destination address.\n");
     uip_debug_ipaddr_print(&v6hdr->destipaddr);
-    PRINTF("\n");
+    //PRINTF("\n");
 #endif /* DEBUG */
     return 0;
   }
@@ -502,7 +502,7 @@ ip64_6to4(const uint8_t *ipv6packet, const uint16_t ipv6packet_len,
      ip64_set_ipv4_address() function. Only let broadcasts through. */
   if(!ip64_hostaddr_configured &&
      !uip_ip4addr_cmp(&v4hdr->destipaddr, &ipv4_broadcast_addr)) {
-    PRINTF("ip64_6to4: no IPv4 address configured.\n");
+    //PRINTF("ip64_6to4: no IPv4 address configured.\n");
     return 0;
   }
   ip64_addr_copy4(&v4hdr->srcipaddr, &ip64_hostaddr);
@@ -537,20 +537,20 @@ ip64_6to4(const uint8_t *ipv6packet, const uint16_t ipv6packet_len,
 			      uip_ntohs(udphdr->destport),
 			      v4hdr->proto);
       if(m == NULL) {
-	PRINTF("Lookup failed\n");
+	//PRINTF("Lookup failed\n");
 	m = ip64_addrmap_create(&v6hdr->srcipaddr,
 				uip_ntohs(udphdr->srcport),
 				&v4hdr->destipaddr,
 				uip_ntohs(udphdr->destport),
 				v4hdr->proto);
 	if(m == NULL) {
-	  PRINTF("Could not create new map\n");
+	  //PRINTF("Could not create new map\n");
 	  return 0;
 	} else {
-	  PRINTF("Could create new local port %d\n", m->mapped_port);
+	  //PRINTF("Could create new local port %d\n", m->mapped_port);
 	}
       } else {
-	PRINTF("Lookup: found local port %d (%d)\n", m->mapped_port,
+	//PRINTF("Lookup: found local port %d (%d)\n", m->mapped_port,
 	       uip_htons(m->mapped_port));
       }
 
@@ -638,12 +638,12 @@ ip64_6to4(const uint8_t *ipv6packet, const uint16_t ipv6packet_len,
     break;
 
   default:
-    PRINTF("ip64_6to4: transport protocol %d not implemented\n", v4hdr->proto);
+    //PRINTF("ip64_6to4: transport protocol %d not implemented\n", v4hdr->proto);
     return 0;
   }
 
   /* Finally, we return the length of the resulting IPv4 packet. */
-  PRINTF("ip64_6to4: ipv4len %d\n", ipv4len);
+  //PRINTF("ip64_6to4: ipv4len %d\n", ipv4len);
   return ipv4len;
 }
 /*---------------------------------------------------------------------------*/
@@ -666,7 +666,7 @@ ip64_4to6(const uint8_t *ipv4packet, const uint16_t ipv4packet_len,
   if((v4hdr->len[0] << 8) + v4hdr->len[1] <= ipv4packet_len) {
     ipv4len = (v4hdr->len[0] << 8) + v4hdr->len[1];
   } else {
-    PRINTF("ip64_4to6: packet smaller than reported in IPv4 header, dropping\n");
+    //PRINTF("ip64_4to6: packet smaller than reported in IPv4 header, dropping\n");
     return 0;
   }
 
@@ -677,7 +677,7 @@ ip64_4to6(const uint8_t *ipv4packet, const uint16_t ipv4packet_len,
   /* Make sure that the resulting packet fits in the ip64 packet
      buffer. If not, we drop it. */
   if(ipv4len - IPV4_HDRLEN + IPV6_HDRLEN > BUFSIZE) {
-    PRINTF("ip64_4to6: packet too big to fit in buffer, dropping\n");
+    //PRINTF("ip64_4to6: packet too big to fit in buffer, dropping\n");
     return 0;
   }
   /* We copy the data from the IPv4 packet into the IPv6 packet. */
@@ -719,7 +719,7 @@ ip64_4to6(const uint8_t *ipv4packet, const uint16_t ipv4packet_len,
      tuple. If not, we'll return 0 to indicate that we failed to
      translate the packet. */
   if(ip64_addr_4to6(&v4hdr->srcipaddr, &v6hdr->srcipaddr) == 0) {
-    PRINTF("ip64_packet_4to6: failed to convert source IP address\n");
+    //PRINTF("ip64_packet_4to6: failed to convert source IP address\n");
     return 0;
   }
 
@@ -753,13 +753,13 @@ ip64_4to6(const uint8_t *ipv4packet, const uint16_t ipv4packet_len,
     /* Allow only ICMPv4 ECHO_REQUESTS (ping packets) through to the
        local IPv6 host. */
     if(icmpv4hdr->type == ICMP_ECHO) {
-      PRINTF("ip64_4to6: translating ICMPv4 ECHO packet\n");
+      //PRINTF("ip64_4to6: translating ICMPv4 ECHO packet\n");
       v6hdr->nxthdr = IP_PROTO_ICMPV6;
       icmpv6hdr->type = ICMP6_ECHO;
       ip64_addr_copy6(&v6hdr->destipaddr, &ipv6_local_address);
     } else {
-      PRINTF("ip64_packet_4to6: ICMPv4 packet type %d not supported\n",
-	     icmpv4hdr->type);
+      //PRINTF("ip64_packet_4to6: ICMPv4 packet type %d not supported\n",
+	    // icmpv4hdr->type);
       return 0;
     }
     break;
@@ -768,8 +768,8 @@ ip64_4to6(const uint8_t *ipv4packet, const uint16_t ipv4packet_len,
     /* For protocol types that we do not support, we return 0 to
        indicate that we failed to translate the packet to an IPv6
        packet. */
-    PRINTF("ip64_packet_4to6: protocol type %d not supported\n",
-	   v4hdr->proto);
+    //PRINTF("ip64_packet_4to6: protocol type %d not supported\n",
+	  // v4hdr->proto);
     return 0;
   }
 
@@ -785,14 +785,14 @@ ip64_4to6(const uint8_t *ipv4packet, const uint16_t ipv4packet_len,
   } else {
 
     if(!ip64_hostaddr_configured) {
-      PRINTF("ip64_packet_4to6: no local IPv4 address configured, dropping incoming packet.\n");
+      //PRINTF("ip64_packet_4to6: no local IPv4 address configured, dropping incoming packet.\n");
       return 0;
     }
 
     if(!uip_ip4addr_cmp(&v4hdr->destipaddr, &ip64_hostaddr)) {
-      PRINTF("ip64_packet_4to6: the IPv4 destination address %d.%d.%d.%d did not match our IPv4 address %d.%d.%d.%d\n",
-	     uip_ipaddr_to_quad(&v4hdr->destipaddr),
-	     uip_ipaddr_to_quad(&ip64_hostaddr));
+      //PRINTF("ip64_packet_4to6: the IPv4 destination address %d.%d.%d.%d did not match our IPv4 address %d.%d.%d.%d\n",
+	    // uip_ipaddr_to_quad(&v4hdr->destipaddr),
+	    // uip_ipaddr_to_quad(&ip64_hostaddr));
       return 0;
     }
 
@@ -812,23 +812,23 @@ ip64_4to6(const uint8_t *ipv4packet, const uint16_t ipv4packet_len,
     if((v4hdr->proto == IP_PROTO_TCP || v4hdr->proto == IP_PROTO_UDP)) {
       if(uip_htons(tcphdr->destport) < EPHEMERAL_PORTRANGE) {
 	/* This packet should go to the local host. */
-	PRINTF("Port is in the non-ephemeral port range %d (%d)\n",
-	       tcphdr->destport, uip_htons(tcphdr->destport));
+	//PRINTF("Port is in the non-ephemeral port range %d (%d)\n",
+	//       tcphdr->destport, uip_htons(tcphdr->destport));
 	ip64_addr_copy6(&v6hdr->destipaddr, &ipv6_local_address);
       } else if(ip64_special_ports_incoming_is_special(uip_htons(tcphdr->destport))) {
 	uip_ip6addr_t newip6addr;
 	uint16_t newport;
-	PRINTF("ip64 port %d (%d) is special, treating it differently\n",
-	       tcphdr->destport, uip_htons(tcphdr->destport));
+	//PRINTF("ip64 port %d (%d) is special, treating it differently\n",
+	//       tcphdr->destport, uip_htons(tcphdr->destport));
 	if(ip64_special_ports_translate_incoming(uip_htons(tcphdr->destport),
 						 &newip6addr, &newport)) {
 	  ip64_addr_copy6(&v6hdr->destipaddr, &newip6addr);
 	  tcphdr->destport = uip_htons(newport);
-	  PRINTF("New port %d (%d)\n",
-		 tcphdr->destport, uip_htons(tcphdr->destport));
+	  //PRINTF("New port %d (%d)\n",
+		// tcphdr->destport, uip_htons(tcphdr->destport));
 	} else {
 	  ip64_addr_copy6(&v6hdr->destipaddr, &ipv6_local_address);
-	  PRINTF("No new port\n");
+	  //PRINTF("No new port\n");
 	}
       } else {
       /* The TCP or UDP port numbers were not non-ephemeral and not
@@ -838,10 +838,10 @@ ip64_4to6(const uint8_t *ipv4packet, const uint16_t ipv4packet_len,
 	m = ip64_addrmap_lookup_port(uip_ntohs(udphdr->destport),
 				     v4hdr->proto);
 	if(m == NULL) {
-	  PRINTF("Inbound lookup failed\n");
+	  //PRINTF("Inbound lookup failed\n");
 	  return 0;
 	} else {
-	  PRINTF("Inbound lookup did not fail\n");
+	  //PRINTF("Inbound lookup did not fail\n");
 	}
 	ip64_addr_copy6(&v6hdr->destipaddr, &m->ip6addr);
 	udphdr->destport = uip_htons(m->ip6port);
@@ -876,12 +876,12 @@ ip64_4to6(const uint8_t *ipv4packet, const uint16_t ipv4packet_len,
                                                 IP_PROTO_ICMPV6));
     break;
   default:
-    PRINTF("ip64_4to6: transport protocol %d not implemented\n", v4hdr->proto);
+    //PRINTF("ip64_4to6: transport protocol %d not implemented\n", v4hdr->proto);
     return 0;
   }
 
   /* Finally, we return the length of the resulting IPv6 packet. */
-  PRINTF("ip64_4to6: ipv6len %d\n", ipv6len);
+  //PRINTF("ip64_4to6: ipv6len %d\n", ipv6len);
   return ipv6len;
 }
 /*---------------------------------------------------------------------------*/
@@ -900,7 +900,7 @@ interface_init(void)
 static int
 interface_output(void)
 {
-  PRINTF("ip64: interface_output len %d\n", uip_len);
+  //PRINTF("ip64: interface_output len %d\n", uip_len);
   IP64_UIP_FALLBACK_INTERFACE.output();
 
   return 0;

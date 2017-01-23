@@ -42,12 +42,12 @@
 #define DEBUG 0
 
 #if DEBUG
-#include <stdio.h>
-#define PRINTF(...) printf(__VA_ARGS__)
+//#include <stdio.h>
+//#define PRINTF(...) printf(__VA_ARGS__)
 #define PRINTADDR(addr) PRINTF(" %02x%02x:%02x%02x:%02x%02x:%02x%02x ", ((uint8_t *)addr)[0], ((uint8_t *)addr)[1], ((uint8_t *)addr)[2], ((uint8_t *)addr)[3], ((uint8_t *)addr)[4], ((uint8_t *)addr)[5], ((uint8_t *)addr)[6], ((uint8_t *)addr)[7])
 #else
-#define PRINTF(...)
-#define PRINTADDR(addr)
+//#define PRINTF(...)
+//#define PRINTADDR(addr)
 #endif
 
 struct nullmac_hdr {
@@ -73,7 +73,7 @@ create(void)
     linkaddr_copy(&(hdr->receiver), packetbuf_addr(PACKETBUF_ADDR_RECEIVER));
     return sizeof(struct nullmac_hdr);
   }
-  PRINTF("PNULLMAC-UT: too large header: %u\n", sizeof(struct nullmac_hdr));
+  //PRINTF("PNULLMAC-UT: too large header: %u\n", sizeof(struct nullmac_hdr));
   return FRAMER_FAILED;
 }
 /*---------------------------------------------------------------------------*/
@@ -86,10 +86,10 @@ parse(void)
     packetbuf_set_addr(PACKETBUF_ADDR_SENDER, &(hdr->sender));
     packetbuf_set_addr(PACKETBUF_ADDR_RECEIVER, &(hdr->receiver));
 
-    PRINTF("PNULLMAC-IN: ");
-    PRINTADDR(packetbuf_addr(PACKETBUF_ADDR_SENDER));
-    PRINTADDR(packetbuf_addr(PACKETBUF_ADDR_RECEIVER));
-    PRINTF("%u (%u)\n", packetbuf_datalen(), sizeof(struct nullmac_hdr));
+    //PRINTF("PNULLMAC-IN: ");
+    //PRINTADDR(packetbuf_addr(PACKETBUF_ADDR_SENDER));
+    //PRINTADDR(packetbuf_addr(PACKETBUF_ADDR_RECEIVER));
+    //PRINTF("%u (%u)\n", packetbuf_datalen(), sizeof(struct nullmac_hdr));
 
     return sizeof(struct nullmac_hdr);
   }

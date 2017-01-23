@@ -55,7 +55,7 @@
 #include "lib/random.h"
 
 #include <string.h>
-#include <stdio.h>
+//#include <stdio.h>
 #include <stddef.h>
 
 static const struct packetbuf_attrlist attributes[] =
@@ -212,8 +212,8 @@ struct {
 #define DRAW_TREE 0
 #define DEBUG 0
 #if DEBUG
-#include <stdio.h>
-#define PRINTF(...) printf(__VA_ARGS__)
+//#include <stdio.h>
+//#define PRINTF(...) printf(__VA_ARGS__)
 #else
 #define PRINTF(...)
 #endif

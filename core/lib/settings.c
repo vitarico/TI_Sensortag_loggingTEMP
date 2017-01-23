@@ -436,14 +436,14 @@ settings_wipe(void)
 /*****************************************************************************/
 
 #if DEBUG
-#include <stdio.h>
+//#include <stdio.h>
 /*---------------------------------------------------------------------------*/
 void
 settings_debug_dump(void)
 {
   settings_iter_t iter;
 
-  printf("{\n");
+  //printf("{\n");
   for(iter = settings_iter_begin(); iter; iter = settings_iter_next(iter)) {
     settings_length_t len = settings_iter_get_value_length(iter);
     eeprom_addr_t addr = settings_iter_get_value_addr(iter);
@@ -456,19 +456,19 @@ settings_debug_dump(void)
 
     u.key = settings_iter_get_key(iter);
 
-    printf("\t\"%c%c\" = <", u.bytes[0], u.bytes[1]);
+    //printf("\t\"%c%c\" = <", u.bytes[0], u.bytes[1]);
 
     for(; len; len--, addr++) {
       eeprom_read(addr, &byte, 1);
-      printf("%02X", byte);
+      //printf("%02X", byte);
       if(len != 1) {
-        printf(" ");
+        //printf(" ");
       }
     }
 
-    printf(">;\n");
+    //printf(">;\n");
   }
-  printf("}\n");
+  //printf("}\n");
 }
 #endif /* DEBUG */
 

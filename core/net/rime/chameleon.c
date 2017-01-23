@@ -42,7 +42,7 @@
 #include "net/rime/rime.h"
 #include "lib/list.h"
 
-#include <stdio.h>
+//#include <stdio.h>
 
 #ifndef CHAMELEON_MODULE
 #ifdef CHAMELEON_CONF_MODULE
@@ -56,8 +56,8 @@ extern const struct chameleon_module CHAMELEON_MODULE;
 
 #define DEBUG 0
 #if DEBUG
-#include <stdio.h>
-#define PRINTF(...) printf(__VA_ARGS__)
+//#include <stdio.h>
+//#define PRINTF(...) printf(__VA_ARGS__)
 #else
 #define PRINTF(...)
 #endif
@@ -82,7 +82,7 @@ printbin(int n, int digits)
   }
   output[i] = 0;
 
-  printf(output);
+  //printf(output);
 }
 
 static void
@@ -93,16 +93,16 @@ printhdr(uint8_t *hdr, int len)
   j = 0;
   for(i = 0; i < len; ++i) {
     printbin(hdr[i], 8);
-    printf(" (0x%0x), ", hdr[i]);
+    //printf(" (0x%0x), ", hdr[i]);
     ++j;
     if(j == 10) {
-      printf("\n");
+      //printf("\n");
       j = 0;
     }
   }
 
   if(j != 0) {
-    printf("\n");
+    //printf("\n");
   }
 }
 #endif /* DEBUG */

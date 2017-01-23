@@ -79,9 +79,9 @@ NBR_TABLE(struct phase, nbr_phase);
 
 #define DEBUG 0
 #if DEBUG
-#include <stdio.h>
-#define PRINTF(...) printf(__VA_ARGS__)
-#define PRINTDEBUG(...) printf(__VA_ARGS__)
+//#include <stdio.h>
+//#define PRINTF(...) printf(__VA_ARGS__)
+//#define PRINTDEBUG(...) printf(__VA_ARGS__)
 #else
 #define PRINTF(...)
 #define PRINTDEBUG(...)

@@ -68,7 +68,7 @@
 
 #include "driverlib/driverlib_release.h"
 
-#include <stdio.h>
+//#include <stdio.h>
 /*---------------------------------------------------------------------------*/
 unsigned short node_id = 0;
 /*---------------------------------------------------------------------------*/
@@ -115,22 +115,22 @@ set_rf_params(void)
   NETSTACK_RADIO.set_object(RADIO_PARAM_64BIT_ADDR, ext_addr, 8);
 
   NETSTACK_RADIO.get_value(RADIO_PARAM_CHANNEL, &val);
-  printf(" RF: Channel %d\n", val);
+  //printf(" RF: Channel %d\n", val);
 
 #if STARTUP_CONF_VERBOSE
   {
     int i;
-    printf(" Link layer addr: ");
+    //printf(" Link layer addr: ");
     for(i = 0; i < LINKADDR_SIZE - 1; i++) {
-      printf("%02x:", linkaddr_node_addr.u8[i]);
+      //printf("%02x:", linkaddr_node_addr.u8[i]);
     }
-    printf("%02x\n", linkaddr_node_addr.u8[i]);
+    //printf("%02x\n", linkaddr_node_addr.u8[i]);
   }
 #endif
 
   /* also set the global node id */
   node_id = short_addr;
-  printf(" Node ID: %d\n", node_id);
+  //printf(" Node ID: %d\n", node_id);
 }
 /*---------------------------------------------------------------------------*/
 /**
@@ -186,15 +186,15 @@ main(void)
 
   serial_line_init();
 
-  printf("Starting " CONTIKI_VERSION_STRING "\n");
-  printf("With DriverLib v%u.%u\n", DRIVERLIB_RELEASE_GROUP,
-         DRIVERLIB_RELEASE_BUILD);
-  printf(BOARD_STRING "\n");
-  printf("IEEE 802.15.4: %s, Sub-GHz: %s, BLE: %s, Prop: %s\n",
-         ti_lib_chipinfo_supports_ieee_802_15_4() == true ? "Yes" : "No",
-         ti_lib_chipinfo_chip_family_is_cc13xx() == true ? "Yes" : "No",
-         ti_lib_chipinfo_supports_ble() == true ? "Yes" : "No",
-         ti_lib_chipinfo_supports_proprietary() == true ? "Yes" : "No");
+  //printf("Starting " CONTIKI_VERSION_STRING "\n");
+  //printf("With DriverLib v%u.%u\n", DRIVERLIB_RELEASE_GROUP,
+  //       DRIVERLIB_RELEASE_BUILD);
+  //printf(BOARD_STRING "\n");
+  //printf("IEEE 802.15.4: %s, Sub-GHz: %s, BLE: %s, Prop: %s\n",
+  //       ti_lib_chipinfo_supports_ieee_802_15_4() == true ? "Yes" : "No",
+  //       ti_lib_chipinfo_chip_family_is_cc13xx() == true ? "Yes" : "No",
+  //       ti_lib_chipinfo_supports_ble() == true ? "Yes" : "No",
+  //       ti_lib_chipinfo_supports_proprietary() == true ? "Yes" : "No");
 
   process_start(&etimer_process, NULL);
   ctimer_init();
@@ -204,18 +204,18 @@ main(void)
 
   fade(LEDS_YELLOW);
 
-  printf(" Net: ");
-  printf("%s\n", NETSTACK_NETWORK.name);
-  printf(" MAC: ");
-  printf("%s\n", NETSTACK_MAC.name);
-  printf(" RDC: ");
-  printf("%s", NETSTACK_RDC.name);
+  //printf(" Net: ");
+  //printf("%s\n", NETSTACK_NETWORK.name);
+  //printf(" MAC: ");
+  //printf("%s\n", NETSTACK_MAC.name);
+  //printf(" RDC: ");
+  //printf("%s", NETSTACK_RDC.name);
 
   if(NETSTACK_RDC.channel_check_interval() != 0) {
-    printf(", Channel Check Interval: %u ticks",
-           NETSTACK_RDC.channel_check_interval());
+    //printf(", Channel Check Interval: %u ticks",
+    //       NETSTACK_RDC.channel_check_interval());
   }
-  printf("\n");
+  //printf("\n");
 
   netstack_init();
 

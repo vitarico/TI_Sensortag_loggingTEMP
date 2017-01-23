@@ -37,9 +37,9 @@
 #include "ip64-arp.h"
 
 #include <string.h>
-#include <stdio.h>
+//#include <stdio.h>
 
-#define printf(...)
+//#define printf(...)
 
 struct arp_hdr {
   struct ip64_eth_hdr ethhdr;
@@ -103,10 +103,10 @@ static uint8_t tmpage;
 
 #define DEBUG 0
 #if DEBUG
-#include <stdio.h>
-#define PRINTF(...) printf(__VA_ARGS__)
+//#include <stdio.h>
+//#define PRINTF(...) printf(__VA_ARGS__)
 #else
-#define PRINTF(...)
+//#define PRINTF(...)
 #endif
 
 const uip_ipaddr_t uip_all_zeroes_addr;
@@ -222,7 +222,7 @@ ip64_arp_arp_input(const uint8_t *packet, uint16_t packet_len)
   struct arp_hdr *arphdr = (struct arp_hdr *)packet;
 
   if(packet_len < sizeof(struct arp_hdr)) {
-    printf("ip64_arp_arp_input: len too small %d\n", packet_len);
+    //printf("ip64_arp_arp_input: len too small %d\n", packet_len);
     return 0;
   }
 
@@ -230,11 +230,11 @@ ip64_arp_arp_input(const uint8_t *packet, uint16_t packet_len)
   case UIP_HTONS(ARP_REQUEST):
     /* ARP request. If it asked for our address, we send out a
        reply. */
-    printf("ip64_arp_arp_input: request for %d.%d.%d.%d (we are %d.%d.%d.%d)\n",
-	   arphdr->dipaddr.u8[0], arphdr->dipaddr.u8[1],
-	   arphdr->dipaddr.u8[2], arphdr->dipaddr.u8[3],
-	   ip64_get_hostaddr()->u8[0], ip64_get_hostaddr()->u8[1],
-	   ip64_get_hostaddr()->u8[2], ip64_get_hostaddr()->u8[3]);
+    //printf("ip64_arp_arp_input: request for %d.%d.%d.%d (we are %d.%d.%d.%d)\n",
+	  // arphdr->dipaddr.u8[0], arphdr->dipaddr.u8[1],
+	  // arphdr->dipaddr.u8[2], arphdr->dipaddr.u8[3],
+	  // ip64_get_hostaddr()->u8[0], ip64_get_hostaddr()->u8[1],
+	  // ip64_get_hostaddr()->u8[2], ip64_get_hostaddr()->u8[3]);
     if(uip_ip4addr_cmp(&arphdr->dipaddr, ip64_get_hostaddr())) {
       /* First, we register the one who made the request in our ARP
 	 table, since it is likely that we will do more communication
@@ -274,13 +274,13 @@ ip64_arp_check_cache(const uint8_t *nlhdr)
   uip_ip4addr_t broadcast_addr;
   struct arp_entry *tabptr = arp_table;
 
-  printf("check cache %d.%d.%d.%d\n",
-	 uip_ipaddr_to_quad(&ipv4_hdr->destipaddr));
+  //printf("check cache %d.%d.%d.%d\n",
+	// uip_ipaddr_to_quad(&ipv4_hdr->destipaddr));
   
   /* First check if destination is a local broadcast. */
   uip_ipaddr(&broadcast_addr, 255,255,255,255);
   if(uip_ip4addr_cmp(&ipv4_hdr->destipaddr, &broadcast_addr)) {
-    printf("Return 1\n");
+    //printf("Return 1\n");
     return 1;
   } else if(ipv4_hdr->destipaddr.u8[0] == 224) {
     /* Multicast. */

@@ -41,7 +41,7 @@
 #include "net/ipv4/uip-neighbor.h"
 
 #include <string.h>
-#include <stdio.h>
+//#include <stdio.h>
 
 #define MAX_TIME 128
 

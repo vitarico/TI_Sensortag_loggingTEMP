@@ -28,7 +28,7 @@
  *
  */
 
-#include <stdio.h>
+//#include <stdio.h>
 #include <string.h>
 
 #include "contiki.h"
@@ -42,9 +42,9 @@
 #include "lib/assert.h"
 
 #if 1
-#define PRINTF(...) do {} while (0)
+//#define PRINTF(...) do {} while (0)
 #else
-#define PRINTF(...) printf(__VA_ARGS__)
+//#define PRINTF(...) printf(__VA_ARGS__)
 #endif
 
 #ifndef CMOD_NMODULES
@@ -63,12 +63,12 @@ cmod_load(unsigned imod,
   void (*init)(void);
 
   if(imod >= CMOD_NMODULES) {
-    PRINTF("imod to large");
+    //PRINTF("imod to large");
     return 100;
   }
 
   if(cmod_module[imod].ram != NULL || cmod_module[imod].fini != NULL) {
-    PRINTF("module busy\n");
+    //PRINTF("module busy\n");
     return 101;
   }
 
@@ -92,12 +92,12 @@ cmod_load(unsigned imod,
   h.bss = h.data + h.datasize;
   h.text = (cle_addr)h.bss + h.bsssize;
 
-  PRINTF("cmod: copy text segment to RAM %p %p\n",
+  //PRINTF("cmod: copy text segment to RAM %p %p\n",
 	 h.text, h.text + h.textsize);
   ret = pread((void *)h.text, h.textsize, off + h.textoff); 
   assert(ret > 0);
   if(h.textrelasize > 0) {
-    PRINTF("cmod: relocate text in RAM\n");
+    //PRINTF("cmod: relocate text in RAM\n");
     ret = cle_relocate(&h,
 		       pread,
 		       off,
@@ -109,12 +109,12 @@ cmod_load(unsigned imod,
     }
   }
 
-  PRINTF("cmod: copy data segment to RAM %p %p\n",
+  //PRINTF("cmod: copy data segment to RAM %p %p\n",
 	 h.data, h.data + h.datasize);
   ret = pread(h.data, h.datasize, off + h.dataoff); 
   assert(ret >= 0);
   if(h.datarelasize > 0) {
-    PRINTF("cmod: relocate data segment\n");
+    //PRINTF("cmod: relocate data segment\n");
     ret = cle_relocate(&h,
 		       pread,
 		       off,
@@ -126,14 +126,14 @@ cmod_load(unsigned imod,
     }
   }
 
-  PRINTF("cmod: zero bss %p %p\n", h.bss, h.bss + h.bsssize);
+  //PRINTF("cmod: zero bss %p %p\n", h.bss, h.bss + h.bsssize);
   memset(h.bss, 0, h.bsssize);
 
   cmod_module[imod].fini = cle_lookup(&h, pread, off, "_fini");
   init = cle_lookup(&h, pread, off, "_init");
 
   if(init != NULL) {
-    PRINTF("init=%p fini=%p\n", init, cmod_module[imod].fini);
+    //PRINTF("init=%p fini=%p\n", init, cmod_module[imod].fini);
     (*init)();
     return CLE_OK;
   } else

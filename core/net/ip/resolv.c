@@ -75,7 +75,7 @@
 #if UIP_UDP
 
 #include <string.h>
-#include <stdio.h>
+//#include <stdio.h>
 #include <ctype.h>
 
 #ifndef NULL
@@ -87,15 +87,15 @@
 #endif
 
 #if VERBOSE_DEBUG
-#define DEBUG_PRINTF(...) printf(__VA_ARGS__)
+//#define DEBUG_PRINTF(...) printf(__VA_ARGS__)
 #else
-#define DEBUG_PRINTF(...) do { } while(0)
+//#define DEBUG_PRINTF(...) do { } while(0)
 #endif
 
 #if DEBUG || VERBOSE_DEBUG
-#define PRINTF(...) printf(__VA_ARGS__)
+//#define PRINTF(...) printf(__VA_ARGS__)
 #else
-#define PRINTF(...) do { } while(0)
+//#define PRINTF(...) do { } while(0)
 #endif
 
 #ifdef __SDCC
@@ -423,12 +423,12 @@ skip_name(unsigned char *query)
 {
   unsigned char n;
 
-  DEBUG_PRINTF("resolver: skip name: ");
+  //DEBUG_PRINTF("resolver: skip name: ");
 
   do {
     n = *query;
     if(n & 0xc0) {
-      DEBUG_PRINTF("<skip-to-%d>", query[0] + ((n & ~0xC0) << 8));
+      //DEBUG_PRINTF("<skip-to-%d>", query[0] + ((n & ~0xC0) << 8));
       ++query;
       break;
     }
@@ -436,13 +436,13 @@ skip_name(unsigned char *query)
     ++query;
 
     while(n > 0) {
-      DEBUG_PRINTF("%c", *query);
+      //DEBUG_PRINTF("%c", *query);
       ++query;
       --n;
     };
-    DEBUG_PRINTF(".");
+    //DEBUG_PRINTF(".");
   } while(*query != 0);
-  DEBUG_PRINTF("\n");
+  //DEBUG_PRINTF("\n");
   return query + 1;
 }
 /*---------------------------------------------------------------------------*/
@@ -635,7 +635,7 @@ static char
 try_next_server(struct namemap *namemapptr)
 {
 #if VERBOSE_DEBUG
-  printf("server %d\n", namemapptr->server);
+  //printf("server %d\n", namemapptr->server);
 #endif
   namemapptr->server++;
   if(uip_nameserver_get(namemapptr->server) != NULL) {
@@ -755,8 +755,8 @@ check_entries(void)
                               (query - (uint8_t *) uip_appdata),
                               &resolv_mdns_addr, UIP_HTONS(MDNS_PORT));
 
-        PRINTF("resolver: (i=%d) Sent MDNS %s for \"%s\".\n", i,
-               namemapptr->is_probe?"probe":"request",namemapptr->name);
+        //PRINTF("resolver: (i=%d) Sent MDNS %s for \"%s\".\n", i,
+        //       namemapptr->is_probe?"probe":"request",namemapptr->name);
       } else {
         uip_udp_packet_sendto(resolv_conn, uip_appdata,
                               (query - (uint8_t *) uip_appdata),
@@ -764,15 +764,15 @@ check_entries(void)
                                 uip_nameserver_get(namemapptr->server), 
                               UIP_HTONS(DNS_PORT));
 
-        PRINTF("resolver: (i=%d) Sent DNS request for \"%s\".\n", i,
-               namemapptr->name);
+        //PRINTF("resolver: (i=%d) Sent DNS request for \"%s\".\n", i,
+        //       namemapptr->name);
       }
 #else /* RESOLV_CONF_SUPPORTS_MDNS */
       uip_udp_packet_sendto(resolv_conn, uip_appdata,
                             (query - (uint8_t *) uip_appdata),
                             uip_nameserver_get(namemapptr->server), 
                             UIP_HTONS(DNS_PORT));
-      PRINTF("resolver: (i=%d) Sent DNS request for \"%s\".\n", i,
+      //PRINTF("resolver: (i=%d) Sent DNS request for \"%s\".\n", i,
              namemapptr->name);
 #endif /* RESOLV_CONF_SUPPORTS_MDNS */
       break;
@@ -809,15 +809,15 @@ newdata(void)
   queryptr = (unsigned char *)hdr + sizeof(*hdr);
   i = 0;
 
-  DEBUG_PRINTF
-    ("resolver: flags1=0x%02X flags2=0x%02X nquestions=%d, nanswers=%d, nauthrr=%d, nextrarr=%d\n",
-     hdr->flags1, hdr->flags2, (uint8_t) nquestions, (uint8_t) nanswers,
-     (uint8_t) uip_ntohs(hdr->numauthrr),
-     (uint8_t) uip_ntohs(hdr->numextrarr));
+  //DEBUG_PRINTF
+  //  ("resolver: flags1=0x%02X flags2=0x%02X nquestions=%d, nanswers=%d, nauthrr=%d, nextrarr=%d\n",
+  //  hdr->flags1, hdr->flags2, (uint8_t) nquestions, (uint8_t) nanswers,
+  //   (uint8_t) uip_ntohs(hdr->numauthrr),
+  //   (uint8_t) uip_ntohs(hdr->numextrarr));
 
   if(is_request && (nquestions == 0)) {
     /* Skip requests with no questions. */
-    DEBUG_PRINTF("resolver: Skipping request with no questions.\n");
+    //DEBUG_PRINTF("resolver: Skipping request with no questions.\n");
     return;
   }
 
@@ -845,8 +845,8 @@ newdata(void)
       question = &aligned;
 #endif /* !ARCH_DOESNT_NEED_ALIGNED_STRUCTS */
 
-      DEBUG_PRINTF("resolver: Question %d: type=%d class=%d\n", ++i,
-                   uip_htons(question->type), uip_htons(question->class));
+      //DEBUG_PRINTF("resolver: Question %d: type=%d class=%d\n", ++i,
+        //           uip_htons(question->type), uip_htons(question->class));
 
       if(((uip_ntohs(question->class) & 0x7FFF) != DNS_CLASS_IN) ||
          ((question->type != UIP_HTONS(DNS_TYPE_ANY)) &&
@@ -859,7 +859,7 @@ newdata(void)
         continue;
       }
 
-      PRINTF("resolver: THIS IS A REQUEST FOR US!!!\n");
+      //PRINTF("resolver: THIS IS A REQUEST FOR US!!!\n");
 
       if(mdns_state == MDNS_STATE_READY) {
         /* We only send immediately if this isn't an MDNS request.
@@ -876,7 +876,7 @@ newdata(void)
         return;
       } else {
         uint8_t nauthrr;
-        PRINTF("resolver: But we are still probing. Waiting...\n");
+        //PRINTF("resolver: But we are still probing. Waiting...\n");
         /* We are still probing. We need to do the mDNS
          * probe race condition check here and make sure
          * we don't need to delay probing for a second.
@@ -924,11 +924,11 @@ newdata(void)
     }
 
     if(i >= RESOLV_ENTRIES || i < 0 || namemapptr->state != STATE_ASKING) {
-      PRINTF("resolver: DNS response has bad ID (%04X) \n", uip_ntohs(hdr->id));
+      //PRINTF("resolver: DNS response has bad ID (%04X) \n", uip_ntohs(hdr->id));
       return;
     }
 
-    PRINTF("resolver: Incoming response for \"%s\".\n", namemapptr->name);
+    //PRINTF("resolver: Incoming response for \"%s\".\n", namemapptr->name);
 
     /* We'll change this to DONE when we find the record. */
     namemapptr->state = STATE_ERROR;
@@ -965,11 +965,11 @@ newdata(void)
 #if VERBOSE_DEBUG
     char debug_name[40];
     decode_name(queryptr, debug_name, uip_appdata);
-    DEBUG_PRINTF("resolver: Answer %d: \"%s\", type %d, class %d, ttl %d, length %d\n",
-                 ++i, debug_name, uip_ntohs(ans->type),
-                 uip_ntohs(ans->class) & 0x7FFF,
-                 (int)((uint32_t) uip_ntohs(ans->ttl[0]) << 16) | (uint32_t)
-                 uip_ntohs(ans->ttl[1]), uip_ntohs(ans->len));
+    //DEBUG_PRINTF("resolver: Answer %d: \"%s\", type %d, class %d, ttl %d, length %d\n",
+      //           ++i, debug_name, uip_ntohs(ans->type),
+      //           uip_ntohs(ans->class) & 0x7FFF,
+      //           (int)((uint32_t) uip_ntohs(ans->ttl[0]) << 16) | (uint32_t)
+      //           uip_ntohs(ans->ttl[1]), uip_ntohs(ans->len));
 #endif /* VERBOSE_DEBUG */
 
     /* Check the class and length of the answer to make sure
@@ -989,7 +989,7 @@ newdata(void)
        hdr->id == 0) {
       int8_t available_i = RESOLV_ENTRIES;
 
-      DEBUG_PRINTF("resolver: MDNS query.\n");
+      //DEBUG_PRINTF("resolver: MDNS query.\n");
 
       /* For MDNS, we need to actually look up the name we
        * are looking for.
@@ -1008,18 +1008,18 @@ newdata(void)
         }
       }
       if(i == RESOLV_ENTRIES) {
-        DEBUG_PRINTF("resolver: Unsolicited MDNS response.\n");
+        //DEBUG_PRINTF("resolver: Unsolicited MDNS response.\n");
         i = available_i;
         namemapptr = &names[i];
         if(!decode_name(queryptr, namemapptr->name, uip_appdata)) {
-          DEBUG_PRINTF("resolver: MDNS name too big to cache.\n");
+          //DEBUG_PRINTF("resolver: MDNS name too big to cache.\n");
           namemapptr = NULL;
           goto skip_to_next_answer;
         }
       }
       if(i == RESOLV_ENTRIES) {
-        DEBUG_PRINTF
-          ("resolver: Not enough room to keep track of unsolicited MDNS answer.\n");
+        //DEBUG_PRINTF
+        //  ("resolver: Not enough room to keep track of unsolicited MDNS answer.\n");
 
         if(dns_name_isequal(queryptr, resolv_hostname, uip_appdata)) {
           /* Oh snap, they say they are us! We had better report them... */
@@ -1046,7 +1046,7 @@ newdata(void)
 #endif
 */
 
-    DEBUG_PRINTF("resolver: Answer for \"%s\" is usable.\n", namemapptr->name);
+    //DEBUG_PRINTF("resolver: Answer for \"%s\" is usable.\n", namemapptr->name);
 
     namemapptr->state = STATE_DONE;
 #if RESOLV_SUPPORTS_RECORD_EXPIRATION
@@ -1097,7 +1097,7 @@ resolv_set_hostname(const char *hostname)
     strncat(resolv_hostname, ".local", RESOLV_CONF_MAX_DOMAIN_NAME_SIZE);
   }
 
-  PRINTF("resolver: hostname changed to \"%s\"\n", resolv_hostname);
+  //PRINTF("resolver: hostname changed to \"%s\"\n", resolv_hostname);
 
   start_name_collision_check(0);
 }
@@ -1122,12 +1122,12 @@ PROCESS_THREAD(mdns_probe_process, ev, data)
   PROCESS_BEGIN();
   mdns_state = MDNS_STATE_WAIT_BEFORE_PROBE;
 
-  PRINTF("mdns-probe: Process (re)started.\n");
+  //PRINTF("mdns-probe: Process (re)started.\n");
 
   /* Wait extra time if specified in data */
   if(NULL != data) {
-    PRINTF("mdns-probe: Probing will begin in %ld clocks.\n",
-           (long)*(clock_time_t *) data);
+    //PRINTF("mdns-probe: Probing will begin in %ld clocks.\n",
+      //     (long)*(clock_time_t *) data);
     etimer_set(&delay, *(clock_time_t *) data);
     PROCESS_WAIT_EVENT_UNTIL(ev == PROCESS_EVENT_TIMER);
   }
@@ -1148,7 +1148,7 @@ PROCESS_THREAD(mdns_probe_process, ev, data)
   mdns_state = MDNS_STATE_READY;
   mdns_announce_requested();
 
-  PRINTF("mdns-probe: Finished probing.\n");
+  //PRINTF("mdns-probe: Finished probing.\n");
 
   PROCESS_END();
 }
@@ -1165,12 +1165,12 @@ PROCESS_THREAD(resolv_process, ev, data)
 
   resolv_event_found = process_alloc_event();
 
-  PRINTF("resolver: Process started.\n");
+  //PRINTF("resolver: Process started.\n");
 
   resolv_conn = udp_new(NULL, 0, NULL);
 
 #if RESOLV_CONF_SUPPORTS_MDNS
-  PRINTF("resolver: Supports MDNS.\n");
+  //PRINTF("resolver: Supports MDNS.\n");
   uip_udp_bind(resolv_conn, UIP_HTONS(MDNS_PORT));
 
 #if NETSTACK_CONF_WITH_IPV6
@@ -1197,8 +1197,8 @@ PROCESS_THREAD(resolv_process, ev, data)
           if(mdns_needs_host_announce) {
             size_t len;
 
-            PRINTF("resolver: Announcing that we are \"%s\".\n",
-                   resolv_hostname);
+            //PRINTF("resolver: Announcing that we are \"%s\".\n",
+              //     resolv_hostname);
 
             memset(uip_appdata, 0, sizeof(struct dns_hdr));
 
@@ -1305,7 +1305,7 @@ resolv_query(const char *name)
     nameptr = &names[i];
   }
 
-  PRINTF("resolver: Starting query for \"%s\".\n", name);
+  //PRINTF("resolver: Starting query for \"%s\".\n", name);
 
   memset(nameptr, 0, sizeof(*nameptr));
 
@@ -1322,7 +1322,7 @@ resolv_query(const char *name)
 
     if((name_len > (sizeof(local_suffix) - 1)) &&
        (0 == strcasecmp(name + name_len - (sizeof(local_suffix) - 1), local_suffix))) {
-      PRINTF("resolver: Using MDNS to look up \"%s\".\n", name);
+      //PRINTF("resolver: Using MDNS to look up \"%s\".\n", name);
       nameptr->is_mdns = 1;
     } else {
       nameptr->is_mdns = 0;
@@ -1415,22 +1415,22 @@ resolv_lookup(const char *name, uip_ipaddr_t ** ipaddr)
   switch (ret) {
   case RESOLV_STATUS_CACHED:
     if(ipaddr) {
-      PRINTF("resolver: Found \"%s\" in cache.\n", name);
+      //PRINTF("resolver: Found \"%s\" in cache.\n", name);
       const uip_ipaddr_t *addr = *ipaddr;
 
-      DEBUG_PRINTF
-        ("resolver: %02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x \n",
-         ((uint8_t *) addr)[0], ((uint8_t *) addr)[1], ((uint8_t *) addr)[2],
-         ((uint8_t *) addr)[3], ((uint8_t *) addr)[4], ((uint8_t *) addr)[5],
-         ((uint8_t *) addr)[6], ((uint8_t *) addr)[7], ((uint8_t *) addr)[8],
-         ((uint8_t *) addr)[9], ((uint8_t *) addr)[10],
-         ((uint8_t *) addr)[11], ((uint8_t *) addr)[12],
-         ((uint8_t *) addr)[13], ((uint8_t *) addr)[14],
-         ((uint8_t *) addr)[15]);
+      //DEBUG_PRINTF
+      //  ("resolver: %02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x \n",
+      //   ((uint8_t *) addr)[0], ((uint8_t *) addr)[1], ((uint8_t *) addr)[2],
+      //   ((uint8_t *) addr)[3], ((uint8_t *) addr)[4], ((uint8_t *) addr)[5],
+      //   ((uint8_t *) addr)[6], ((uint8_t *) addr)[7], ((uint8_t *) addr)[8],
+      //   ((uint8_t *) addr)[9], ((uint8_t *) addr)[10],
+      //   ((uint8_t *) addr)[11], ((uint8_t *) addr)[12],
+      //   ((uint8_t *) addr)[13], ((uint8_t *) addr)[14],
+      //   ((uint8_t *) addr)[15]);
       break;
     }
   default:
-    DEBUG_PRINTF("resolver: \"%s\" is NOT cached.\n", name);
+    //DEBUG_PRINTF("resolver: \"%s\" is NOT cached.\n", name);
     break;
   }
 #endif /* VERBOSE_DEBUG */
@@ -1460,7 +1460,7 @@ resolv_found(char *name, uip_ipaddr_t * ipaddr)
       /* We found this new name while probing.
        * We must now rename ourselves.
        */
-      PRINTF("resolver: Name collision detected for \"%s\".\n", name);
+      //PRINTF("resolver: Name collision detected for \"%s\".\n", name);
 
       /* Remove the ".local" suffix. */
       resolv_hostname[strlen(resolv_hostname) - 6] = 0;
@@ -1487,7 +1487,7 @@ resolv_found(char *name, uip_ipaddr_t * ipaddr)
        * that we owned this name. We need to immediately
        * and explicitly begin probing.
        */
-      PRINTF("resolver: Possible name collision, probing...\n");
+      //PRINTF("resolver: Possible name collision, probing...\n");
       start_name_collision_check(0);
     }
 
@@ -1496,19 +1496,19 @@ resolv_found(char *name, uip_ipaddr_t * ipaddr)
 
 #if VERBOSE_DEBUG
   if(ipaddr) {
-    PRINTF("resolver: Found address for \"%s\".\n", name);
-    PRINTF
-      ("resolver: %02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x \n",
-       ((uint8_t *) ipaddr)[0], ((uint8_t *) ipaddr)[1],
-       ((uint8_t *) ipaddr)[2], ((uint8_t *) ipaddr)[3],
-       ((uint8_t *) ipaddr)[4], ((uint8_t *) ipaddr)[5],
-       ((uint8_t *) ipaddr)[6], ((uint8_t *) ipaddr)[7],
-       ((uint8_t *) ipaddr)[8], ((uint8_t *) ipaddr)[9],
-       ((uint8_t *) ipaddr)[10], ((uint8_t *) ipaddr)[11],
-       ((uint8_t *) ipaddr)[12], ((uint8_t *) ipaddr)[13],
-       ((uint8_t *) ipaddr)[14], ((uint8_t *) ipaddr)[15]);
+    //PRINTF("resolver: Found address for \"%s\".\n", name);
+    //PRINTF
+      //("resolver: %02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x \n",
+      // ((uint8_t *) ipaddr)[0], ((uint8_t *) ipaddr)[1],
+      // ((uint8_t *) ipaddr)[2], ((uint8_t *) ipaddr)[3],
+      // ((uint8_t *) ipaddr)[4], ((uint8_t *) ipaddr)[5],
+      // ((uint8_t *) ipaddr)[6], ((uint8_t *) ipaddr)[7],
+      // ((uint8_t *) ipaddr)[8], ((uint8_t *) ipaddr)[9],
+      // ((uint8_t *) ipaddr)[10], ((uint8_t *) ipaddr)[11],
+      // ((uint8_t *) ipaddr)[12], ((uint8_t *) ipaddr)[13],
+      // ((uint8_t *) ipaddr)[14], ((uint8_t *) ipaddr)[15]);
   } else {
-    PRINTF("resolver: Unable to retrieve address for \"%s\".\n", name);
+    //PRINTF("resolver: Unable to retrieve address for \"%s\".\n", name);
   }
 #endif /* VERBOSE_DEBUG */
 

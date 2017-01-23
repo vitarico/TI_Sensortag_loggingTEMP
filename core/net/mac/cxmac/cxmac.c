@@ -146,7 +146,7 @@ struct cxmac_config cxmac_config = {
   DEFAULT_STROBE_WAIT_TIME
 };
 
-#include <stdio.h>
+//#include <stdio.h>
 
 static struct pt pt;
 
@@ -166,9 +166,9 @@ static volatile unsigned char radio_is_on = 0;
 #define LEDS_TOGGLE(x) leds_toggle(x)
 #define DEBUG 0
 #if DEBUG
-#include <stdio.h>
-#define PRINTF(...) printf(__VA_ARGS__)
-#define PRINTDEBUG(...) printf(__VA_ARGS__)
+//#include <stdio.h>
+//#define PRINTF(...) printf(__VA_ARGS__)
+//#define PRINTDEBUG(...) printf(__VA_ARGS__)
 #else
 #undef LEDS_ON
 #undef LEDS_OFF
@@ -176,8 +176,8 @@ static volatile unsigned char radio_is_on = 0;
 #define LEDS_ON(x)
 #define LEDS_OFF(x)
 #define LEDS_TOGGLE(x)
-#define PRINTF(...)
-#define PRINTDEBUG(...)
+//#define PRINTF(...)
+//#define PRINTDEBUG(...)
 #endif
 
 #if CXMAC_CONF_ANNOUNCEMENTS
@@ -432,10 +432,10 @@ send_packet(void)
 #endif
   if(packetbuf_holds_broadcast()) {
     is_broadcast = 1;
-    PRINTDEBUG("cxmac: send broadcast\n");
+    //PRINTDEBUG("cxmac: send broadcast\n");
   } else {
 #if NETSTACK_CONF_WITH_IPV6
-    PRINTDEBUG("cxmac: send unicast to %02x%02x:%02x%02x:%02x%02x:%02x%02x\n",
+    //PRINTDEBUG("cxmac: send unicast to %02x%02x:%02x%02x:%02x%02x:%02x%02x\n",
            packetbuf_addr(PACKETBUF_ADDR_RECEIVER)->u8[0],
            packetbuf_addr(PACKETBUF_ADDR_RECEIVER)->u8[1],
            packetbuf_addr(PACKETBUF_ADDR_RECEIVER)->u8[2],
@@ -445,7 +445,7 @@ send_packet(void)
            packetbuf_addr(PACKETBUF_ADDR_RECEIVER)->u8[6],
            packetbuf_addr(PACKETBUF_ADDR_RECEIVER)->u8[7]);
 #else
-    PRINTDEBUG("cxmac: send unicast to %u.%u\n",
+    //PRINTDEBUG("cxmac: send unicast to %u.%u\n",
            packetbuf_addr(PACKETBUF_ADDR_RECEIVER)->u8[0],
            packetbuf_addr(PACKETBUF_ADDR_RECEIVER)->u8[1]);
 #endif /* NETSTACK_CONF_WITH_IPV6 */
@@ -454,7 +454,7 @@ send_packet(void)
   strobe_len = len + sizeof(struct cxmac_hdr);
   if(len < 0 || strobe_len > (int)sizeof(strobe)) {
     /* Failed to send */
-   PRINTF("cxmac: send failed, too large header\n");
+   //PRINTF("cxmac: send failed, too large header\n");
     return MAC_TX_ERR_FATAL;
   }
   memcpy(strobe, packetbuf_hdrptr(), len);
@@ -465,7 +465,7 @@ send_packet(void)
   packet = queuebuf_new_from_packetbuf();
   if(packet == NULL) {
     /* No buffer available */
-    PRINTF("cxmac: send failed, no queue buffer available (of %u)\n",
+    //PRINTF("cxmac: send failed, no queue buffer available (of %u)\n",
            QUEUEBUF_CONF_NUM);
     return MAC_TX_ERR;
   }
@@ -575,14 +575,14 @@ send_packet(void)
 		got_strobe_ack = 1;
 		encounter_time = now;
 	      } else {
-		PRINTDEBUG("cxmac: strobe ack for someone else\n");
+		//PRINTDEBUG("cxmac: strobe ack for someone else\n");
 	      }
 	    } else /*if(hdr->dispatch == DISPATCH && hdr->type == TYPE_STROBE)*/ {
-	      PRINTDEBUG("cxmac: strobe from someone else\n");
+	      //PRINTDEBUG("cxmac: strobe from someone else\n");
 	      collisions++;
 	    }
 	  } else {
-	    PRINTF("cxmac: send failed to parse %u\n", len);
+	    //PRINTF("cxmac: send failed to parse %u\n", len);
 	  }
 	}
       }
@@ -654,8 +654,8 @@ send_packet(void)
 #endif /* WITH_ENCOUNTER_OPTIMIZATION */
   watchdog_start();
 
-  PRINTF("cxmac: send (strobes=%u,len=%u,%s), done\n", strobes,
-	 packetbuf_totlen(), got_strobe_ack ? "ack" : "no ack");
+  //PRINTF("cxmac: send (strobes=%u,len=%u,%s), done\n", strobes,
+	// packetbuf_totlen(), got_strobe_ack ? "ack" : "no ack");
 
 #if CXMAC_CONF_COMPOWER
   /* Accumulate the power consumption for the packet transmission. */
@@ -693,12 +693,12 @@ qsend_packet(mac_callback_t sent, void *ptr)
 {
   int ret;
   if(someone_is_sending) {
-    PRINTF("cxmac: should queue packet, now just dropping %d %d %d %d.\n",
-	   waiting_for_packet, someone_is_sending, we_are_sending, radio_is_on);
+    //PRINTF("cxmac: should queue packet, now just dropping %d %d %d %d.\n",
+	  // waiting_for_packet, someone_is_sending, we_are_sending, radio_is_on);
     RIMESTATS_ADD(sendingdrop);
     ret = MAC_TX_COLLISION;
   } else {
-    PRINTF("cxmac: send immediately.\n");
+    //PRINTF("cxmac: send immediately.\n");
     ret = send_packet();
   }
 
@@ -751,11 +751,11 @@ input_packet(void)
 
 	waiting_for_packet = 0;
 
-        PRINTDEBUG("cxmac: data(%u)\n", packetbuf_datalen());
+        //PRINTDEBUG("cxmac: data(%u)\n", packetbuf_datalen());
 	NETSTACK_MAC.input();
         return;
       } else {
-        PRINTDEBUG("cxmac: data not for us\n");
+        //PRINTDEBUG("cxmac: data not for us\n");
       }
 
     } else if(hdr->type == TYPE_STROBE) {
@@ -781,9 +781,9 @@ input_packet(void)
 	  waiting_for_packet = 1;
 	  on();
 	  NETSTACK_RADIO.send(packetbuf_hdrptr(), packetbuf_totlen());
-	  PRINTDEBUG("cxmac: send strobe ack %u\n", packetbuf_totlen());
+	  //PRINTDEBUG("cxmac: send strobe ack %u\n", packetbuf_totlen());
 	} else {
-	  PRINTF("cxmac: failed to send strobe ack\n");
+	  //PRINTF("cxmac: failed to send strobe ack\n");
 	}
       } else if(linkaddr_cmp(packetbuf_addr(PACKETBUF_ADDR_RECEIVER),
                              &linkaddr_null)) {
@@ -794,7 +794,7 @@ input_packet(void)
 	waiting_for_packet = 1;
 	on();
       } else {
-        PRINTDEBUG("cxmac: strobe not for us\n");
+        //PRINTDEBUG("cxmac: strobe not for us\n");
       }
 
       /* We are done processing the strobe and we therefore return
@@ -806,13 +806,13 @@ input_packet(void)
       parse_announcements(packetbuf_addr(PACKETBUF_ADDR_SENDER));
 #endif /* CXMAC_CONF_ANNOUNCEMENTS */
     } else if(hdr->type == TYPE_STROBE_ACK) {
-      PRINTDEBUG("cxmac: stray strobe ack\n");
+      //PRINTDEBUG("cxmac: stray strobe ack\n");
     } else {
-      PRINTF("cxmac: unknown type %u (%u)\n", hdr->type,
-             packetbuf_datalen());
+      //PRINTF("cxmac: unknown type %u (%u)\n", hdr->type,
+      //       packetbuf_datalen());
     }
   } else {
-    PRINTF("cxmac: failed to parse (%u)\n", packetbuf_totlen());
+    //PRINTF("cxmac: failed to parse (%u)\n", packetbuf_totlen());
   }
 }
 /*---------------------------------------------------------------------------*/

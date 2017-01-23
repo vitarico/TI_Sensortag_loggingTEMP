@@ -43,7 +43,7 @@
 
 #include <stdint.h>
 #include <string.h>
-#include <stdio.h>
+//#include <stdio.h>
 /*---------------------------------------------------------------------------*/
 static uint8_t buzzer_on;
 LPM_MODULE(buzzer_module, NULL, NULL, NULL, LPM_DOMAIN_PERIPH);

@@ -35,7 +35,7 @@
  * of how the Contiki dynamic Link Editor (CLE) can be used.
  */
 
-#include <stdio.h>
+//#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -52,9 +52,9 @@
 #include "lib/assert.h"
 
 #ifdef NDEBUG
-#define PRINTF(...) do {} while (0)
+//#define PRINTF(...) do {} while (0)
 #else
-#define PRINTF(...) printf(__VA_ARGS__)
+//#define PRINTF(...) printf(__VA_ARGS__)
 #endif
 
 struct process *elfloader_loaded_process;
@@ -114,12 +114,12 @@ elfloader_load(off_t eepromaddr)
   h.bss = datamemory + h.datasize;
   h.text = TEXTMEMORY;
 
-  PRINTF("elfloader: copy text segment to RAM %p %p\n",
+  //PRINTF("elfloader: copy text segment to RAM %p %p\n",
 	 h.data, h.data + h.textsize);
   ret = xmem_pread(datamemory, h.textsize, eepromaddr + h.textoff); 
   assert(ret > 0);
   if(h.textrelasize > 0) {
-    PRINTF("elfloader: relocate text in RAM\n");
+    //PRINTF("elfloader: relocate text in RAM\n");
     ret = cle_relocate(&h,
 		       xmem_pread,
 		       eepromaddr,
@@ -131,9 +131,9 @@ elfloader_load(off_t eepromaddr)
       return ret;
     }
   }
-  PRINTF("elfloader: copy text segment to ROM 0x%lx 0x%lx\n",
-	 (unsigned long)h.text,
-	 (unsigned long)h.text + h.textsize);
+  //PRINTF("elfloader: copy text segment to ROM 0x%lx 0x%lx\n",
+	// (unsigned long)h.text,
+	// (unsigned long)h.text + h.textsize);
 
   ret = rom_erase((h.textsize+ROM_ERASE_UNIT_SIZE) & ~(ROM_ERASE_UNIT_SIZE-1),
 		  h.text);
@@ -141,12 +141,12 @@ elfloader_load(off_t eepromaddr)
   ret = rom_pwrite(datamemory, h.textsize, h.text);
   assert(ret > 0);
 
-  PRINTF("elfloader: copy data segment to RAM %p %p\n",
-	 h.data, h.data + h.datasize);
+  //PRINTF("elfloader: copy data segment to RAM %p %p\n",
+	// h.data, h.data + h.datasize);
   ret = xmem_pread(datamemory, h.datasize, eepromaddr + h.dataoff); 
   assert(ret >= h.datasize);
   if(h.datarelasize > 0) {
-    PRINTF("elfloader: relocate data segment\n");
+    //PRINTF("elfloader: relocate data segment\n");
     ret = cle_relocate(&h,
 		       xmem_pread,
 		       eepromaddr,
@@ -159,7 +159,7 @@ elfloader_load(off_t eepromaddr)
     }
   }
 
-  PRINTF("elfloader: zero bss %p %p\n", h.bss, h.bss + h.bsssize);
+  //PRINTF("elfloader: zero bss %p %p\n", h.bss, h.bss + h.bsssize);
   memset(h.bss, 0, h.bsssize);
 
   /* Find _init, _fini, and loaded_process. */
@@ -169,14 +169,14 @@ elfloader_load(off_t eepromaddr)
   elfloader_init = cle_lookup(&h, xmem_pread, eepromaddr, "_init");
 
   if(elfloader_init != NULL) {
-    PRINTF("init=%p fini=%p\n", elfloader_init, elfloader_fini);
+    //PRINTF("init=%p fini=%p\n", elfloader_init, elfloader_fini);
     (*elfloader_init)();
     elfloader_loaded_process = NULL;
     return ELFLOADER_OK;
   }
 
   if(elfloader_loaded_process != NULL) {
-    PRINTF("elfloader: launch program\n");
+    //PRINTF("elfloader: launch program\n");
     process_start(elfloader_loaded_process, NULL);
     elfloader_fini = NULL;
     return ELFLOADER_OK;

@@ -32,7 +32,7 @@
  * The Contiki dynamic Link Editor (CLE), ELF version.
  */
 
-#include <stdio.h>
+//#include <stdio.h>
 
 #include "contiki.h"
 
@@ -43,9 +43,9 @@
 #include "lib/assert.h"
 
 #ifdef NDEBUG
-#define PRINTF(...) do {} while (0)
+//#define PRINTF(...) do {} while (0)
 #else
-#define PRINTF(...) printf(__VA_ARGS__)
+//#define PRINTF(...) printf(__VA_ARGS__)
 #endif
 
 #define R_AVR_NONE             0
@@ -83,8 +83,8 @@ cle_write_reloc(void *pos_,
 
   switch(ELF32_R_TYPE(rela->r_info)) {
   default:
-    PRINTF("cle_upd_reloc: unsupported relocation type: %d\n",
-	   ELF32_R_TYPE(rela->r_info));
+    //PRINTF("cle_upd_reloc: unsupported relocation type: %d\n",
+	   //ELF32_R_TYPE(rela->r_info));
     return CLE_UNKNOWN_RELOC;
 
   case R_AVR_7_PCREL:		/* 2 */

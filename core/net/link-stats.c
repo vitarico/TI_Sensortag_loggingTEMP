@@ -35,13 +35,13 @@
 #include "net/packetbuf.h"
 #include "net/nbr-table.h"
 #include "net/link-stats.h"
-#include <stdio.h>
+//#include <stdio.h>
 
 #define DEBUG 0
 #if DEBUG
-#define PRINTF(...) printf(__VA_ARGS__)
+//#define PRINTF(...) printf(__VA_ARGS__)
 #else
-#define PRINTF(...)
+//#define PRINTF(...)
 #endif
 
 /* Half time for the freshness counter, in minutes */

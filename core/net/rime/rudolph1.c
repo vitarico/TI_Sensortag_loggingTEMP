@@ -42,7 +42,7 @@
  * @{
  */
 
-#include <stdio.h>
+//#include <stdio.h>
 #include <stddef.h> /* for offsetof */
 
 #include "net/rime/rime.h"
@@ -75,8 +75,8 @@ enum {
 
 #define DEBUG 0
 #if DEBUG
-#include <stdio.h>
-#define PRINTF(...) printf(__VA_ARGS__)
+//#include <stdio.h>
+//#define PRINTF(...) printf(__VA_ARGS__)
 #else
 #define PRINTF(...)
 #endif

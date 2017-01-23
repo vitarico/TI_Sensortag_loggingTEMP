@@ -42,13 +42,13 @@
 
 #define DEBUG 0
 #if DEBUG
-#include <stdio.h>
+//#include <stdio.h>
 #include "sys/ctimer.h"
 static void handle_periodic_timer(void *ptr);
 static struct ctimer periodic_timer;
 static uint8_t initialized = 0;
 static void print_table();
-#define PRINTF(...) printf(__VA_ARGS__)
+//#define PRINTF(...) printf(__VA_ARGS__)
 #else
 #define PRINTF(...)
 #endif

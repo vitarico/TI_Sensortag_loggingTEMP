@@ -31,7 +31,7 @@
  */
 #include "elfloader-arch.h"
 
-#include <stdio.h>
+//#include <stdio.h>
 
 static char datamemory[ELFLOADER_DATAMEMORY_SIZE];
 static const char textmemory[ELFLOADER_TEXTMEMORY_SIZE] = {0};
@@ -51,7 +51,7 @@ elfloader_arch_allocate_rom(int size)
 void
 elfloader_arch_write_rom(int fd, unsigned short textoff, unsigned int size, char *mem)
 {
-  printf("elfloader_arch_write_rom: size %d, offset %i, mem %p\n", size, textoff, mem);
+  //printf("elfloader_arch_write_rom: size %d, offset %i, mem %p\n", size, textoff, mem);
 }
 /*---------------------------------------------------------------------------*/
 void
@@ -59,9 +59,9 @@ elfloader_arch_relocate(int fd, unsigned int sectionoffset,
 			char *sectionaddr,
 			struct elf32_rela *rela, char *addr)
 {
-  printf("elfloader_arch_relocate: sectionoffset 0x%04x, sectionaddr %p, r_offset 0x%04x, r_info 0x%04x, r_addend 0x%04x, addr %p\n",
-	 sectionoffset, sectionaddr,
-	 (unsigned int)rela->r_offset, (unsigned int)rela->r_info,
-	 (unsigned int)rela->r_addend, addr);
+  //printf("elfloader_arch_relocate: sectionoffset 0x%04x, sectionaddr %p, r_offset 0x%04x, r_info 0x%04x, r_addend 0x%04x, addr %p\n",
+	// sectionoffset, sectionaddr,
+	// (unsigned int)rela->r_offset, (unsigned int)rela->r_info,
+	// (unsigned int)rela->r_addend, addr);
 }
 /*---------------------------------------------------------------------------*/

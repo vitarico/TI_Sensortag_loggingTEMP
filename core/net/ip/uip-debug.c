@@ -50,7 +50,7 @@ uip_debug_ipaddr_print(const uip_ipaddr_t *addr)
   int f;
 #endif /* NETSTACK_CONF_WITH_IPV6 */
   if(addr == NULL) {
-    PRINTA("(NULL IP addr)");
+    //PRINTA("(NULL IP addr)");
     return;
   }
 #if NETSTACK_CONF_WITH_IPV6
@@ -69,26 +69,26 @@ uip_debug_ipaddr_print(const uip_ipaddr_t *addr)
      *
      * [1] https://tools.ietf.org/html/rfc4291#page-4
      */
-    PRINTA("::FFFF:%u.%u.%u.%u", addr->u8[12], addr->u8[13], addr->u8[14], addr->u8[15]);
+    //PRINTA("::FFFF:%u.%u.%u.%u", addr->u8[12], addr->u8[13], addr->u8[14], addr->u8[15]);
   } else {
     for(i = 0, f = 0; i < sizeof(uip_ipaddr_t); i += 2) {
       a = (addr->u8[i] << 8) + addr->u8[i + 1];
       if(a == 0 && f >= 0) {
         if(f++ == 0) {
-          PRINTA("::");
+          //PRINTA("::");
         }
       } else {
         if(f > 0) {
           f = -1;
         } else if(i > 0) {
-          PRINTA(":");
+          //PRINTA(":");
         }
-        PRINTA("%x", a);
+        //PRINTA("%x", a);
       }
 	}
   }
 #else /* NETSTACK_CONF_WITH_IPV6 */
-  PRINTA("%u.%u.%u.%u", addr->u8[0], addr->u8[1], addr->u8[2], addr->u8[3]);
+  //PRINTA("%u.%u.%u.%u", addr->u8[0], addr->u8[1], addr->u8[2], addr->u8[3]);
 #endif /* NETSTACK_CONF_WITH_IPV6 */
 }
 /*---------------------------------------------------------------------------*/

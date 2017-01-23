@@ -31,7 +31,7 @@
  */
 #include <dlfcn.h>
 #include <stddef.h>
-#include <stdio.h>
+//#include <stdio.h>
 
 #include "contiki.h"
 
@@ -45,23 +45,23 @@ dlloader_load(char *path, char *arg)
   /* Load and link the program. */
   handle = dlopen(path, RTLD_NOW);
 
-  printf("Loading '%s'\n", path);
+  //printf("Loading '%s'\n", path);
   
   if(handle == NULL) {
-    printf("dlloader_load: loading failed: %s\n", dlerror());
+    //printf("dlloader_load: loading failed: %s\n", dlerror());
     return LOADER_ERR_FMT;
   } 
 
   /* Find the processes to be started from the loaded program. */
   p = dlsym(handle, "autostart_processes");
   if(p == NULL) {
-    printf("dlloader_load: could not find symbol 'autostart_processes'\n");
+    //printf("dlloader_load: could not find symbol 'autostart_processes'\n");
     return LOADER_ERR_FMT;
   }
 
   /* Start the process. */
  
-  printf("Starting '%s'\n", PROCESS_NAME_STRING(*p));
+  //printf("Starting '%s'\n", PROCESS_NAME_STRING(*p));
   process_start(*p, (void *)arg);
 
   return LOADER_OK;

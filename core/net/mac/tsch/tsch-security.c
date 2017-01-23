@@ -50,7 +50,7 @@
 #include "net/packetbuf.h"
 #include "lib/ccm-star.h"
 #include "lib/aes-128.h"
-#include <stdio.h>
+//#include <stdio.h>
 #include <string.h>
 
 #if TSCH_LOG_LEVEL >= 1

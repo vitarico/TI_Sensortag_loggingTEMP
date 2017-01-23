@@ -54,7 +54,7 @@
 #endif
 
 #include <string.h>
-#include <stdio.h>
+//#include <stdio.h>
 #include <stddef.h>
 
 struct announcement_data {
@@ -84,8 +84,8 @@ static struct polite_announcement_state {
 
 #define DEBUG 0
 #if DEBUG
-#include <stdio.h>
-#define PRINTF(...) printf(__VA_ARGS__)
+//#include <stdio.h>
+//#define PRINTF(...) printf(__VA_ARGS__)
 #else
 #define PRINTF(...)
 #endif

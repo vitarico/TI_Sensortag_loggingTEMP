@@ -64,12 +64,12 @@
 /*---------------------------------------------------------------------------*/
 #include <stdint.h>
 #include <stdbool.h>
-#include <stdio.h>
+//#include <stdio.h>
 #include <string.h>
 /*---------------------------------------------------------------------------*/
 #define DEBUG 0
 #if DEBUG
-#define PRINTF(...) printf(__VA_ARGS__)
+//#define PRINTF(...) printf(__VA_ARGS__)
 #else
 #define PRINTF(...)
 #endif
@@ -583,7 +583,7 @@ cc26xx_rf_cpe0_isr(void)
   ENERGEST_ON(ENERGEST_TYPE_IRQ);
 
   if(!rf_core_is_accessible()) {
-    printf("RF ISR called but RF not ready... PANIC!!\n");
+    //printf("RF ISR called but RF not ready... PANIC!!\n");
     if(rf_core_power_up() != RF_CORE_CMD_OK) {
       PRINTF("rf_core_power_up() failed\n");
       return;

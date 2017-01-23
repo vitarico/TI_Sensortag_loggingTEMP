@@ -79,7 +79,7 @@ sensors_changed(const struct sensors_sensor *s)
 {
   sensors_flags[get_sensor_index(s)] |= FLAG_CHANGED;
   process_poll(&sensors_process);
-  printf("Sensor %d changed\n", get_sensor_index(s));
+  //printf("Sensor %d changed\n", get_sensor_index(s));
 
 }
 /*---------------------------------------------------------------------------*/

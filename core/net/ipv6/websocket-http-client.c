@@ -35,7 +35,7 @@
 
 #include "ip64-addr.h"
 
-#include <stdio.h>
+//#include <stdio.h>
 #include <string.h>
 
 #define DEBUG DEBUG_NONE
@@ -78,7 +78,7 @@ send_get(struct websocket_http_client_state *s)
   tcp_socket_send_str(tcps, s->subprotocol);
   tcp_socket_send_str(tcps, "\r\n");
   tcp_socket_send_str(tcps, "\r\n");
-  PRINTF("websocket-http-client: send_get(): output buffer left %d\n", tcp_socket_max_sendlen(tcps));
+  //PRINTF("websocket-http-client: send_get(): output buffer left %d\n", tcp_socket_max_sendlen(tcps));
 }
 /*---------------------------------------------------------------------------*/
 static void
@@ -91,7 +91,7 @@ send_connect(struct websocket_http_client_state *s)
   tcp_socket_send_str(tcps, "CONNECT ");
   tcp_socket_send_str(tcps, s->host);
   tcp_socket_send_str(tcps, ":");
-  sprintf(buf, "%d", s->port);
+  //sprintf(buf, "%d", s->port);
   tcp_socket_send_str(tcps, buf);
   tcp_socket_send_str(tcps, " HTTP/1.1\r\n");
   tcp_socket_send_str(tcps, "Host: ");
@@ -153,8 +153,8 @@ parse_header_byte(struct websocket_http_client_state *s,
      (s->proxy_port == 0 && s->http_status != 101)) {
     /* This is a websocket request, so the server should have answered
        with a 101 Switching protocols response. */
-    PRINTF("Websocket HTTP client didn't get the 101 status code (got %d), closing connection\n",
-           s->http_status);
+    //PRINTF("Websocket HTTP client didn't get the 101 status code (got %d), closing connection\n",
+    //       s->http_status);
     websocket_http_client_close(s);
     while(1) {
       PT_YIELD(&s->parse_header_pt);
@@ -261,8 +261,8 @@ websocket_http_client_get(struct websocket_http_client_state *s)
   uip_ip6addr_t *addr;
   uint16_t port;
 
-  PRINTF("websocket_http_client_get: connecting to %s with file %s subprotocol %s header %s\n",
-         s->host, s->file, s->subprotocol, s->header);
+  //PRINTF("websocket_http_client_get: connecting to %s with file %s subprotocol %s header %s\n",
+  //       s->host, s->file, s->subprotocol, s->header);
 
 
   s->state = STATE_WAITING_FOR_HEADER;

@@ -46,12 +46,12 @@
 #define DEBUG 0
 
 #if DEBUG
-#include <stdio.h>
-#define PRINTF(...) printf(__VA_ARGS__)
-#define PRINTADDR(addr) PRINTF(" %02x%02x:%02x%02x:%02x%02x:%02x%02x ", ((uint8_t *)addr)[0], ((uint8_t *)addr)[1], ((uint8_t *)addr)[2], ((uint8_t *)addr)[3], ((uint8_t *)addr)[4], ((uint8_t *)addr)[5], ((uint8_t *)addr)[6], ((uint8_t *)addr)[7])
+//#include <stdio.h>
+//#define PRINTF(...) printf(__VA_ARGS__)
+//#define PRINTADDR(addr) PRINTF(" %02x%02x:%02x%02x:%02x%02x:%02x%02x ", ((uint8_t *)addr)[0], ((uint8_t *)addr)[1], ((uint8_t *)addr)[2], ((uint8_t *)addr)[3], ((uint8_t *)addr)[4], ((uint8_t *)addr)[5], ((uint8_t *)addr)[6], ((uint8_t *)addr)[7])
 #else
-#define PRINTF(...)
-#define PRINTADDR(addr)
+//#define PRINTF(...)
+//#define PRINTADDR(addr)
 #endif
 
 /**  \brief The sequence number (0x00 - 0xff) added to the transmitted
@@ -184,13 +184,13 @@ create_frame(int type, int do_create)
   } else if(packetbuf_hdralloc(hdr_len)) {
     frame802154_create(&params, packetbuf_hdrptr());
 
-    PRINTF("15.4-OUT: %2X", params.fcf.frame_type);
-    PRINTADDR(params.dest_addr);
-    PRINTF("%d %u (%u)\n", hdr_len, packetbuf_datalen(), packetbuf_totlen());
+    //PRINTF("15.4-OUT: %2X", params.fcf.frame_type);
+    //PRINTADDR(params.dest_addr);
+    //PRINTF("%d %u (%u)\n", hdr_len, packetbuf_datalen(), packetbuf_totlen());
 
     return hdr_len;
   } else {
-    PRINTF("15.4-OUT: too large header: %u\n", hdr_len);
+    //PRINTF("15.4-OUT: too large header: %u\n", hdr_len);
     return FRAMER_FAILED;
   }
 }
@@ -222,7 +222,7 @@ parse(void)
       if(frame.dest_pid != frame802154_get_pan_id() &&
          frame.dest_pid != FRAME802154_BROADCASTPANDID) {
         /* Packet to another PAN */
-        PRINTF("15.4: for another pan %u\n", frame.dest_pid);
+        //PRINTF("15.4: for another pan %u\n", frame.dest_pid);
         return FRAMER_FAILED;
       }
       if(!frame802154_is_broadcast_addr(frame.fcf.dest_addr_mode, frame.dest_addr)) {
@@ -255,10 +255,10 @@ parse(void)
     }
 #endif /* LLSEC802154_USES_AUX_HEADER */
 
-    PRINTF("15.4-IN: %2X", frame.fcf.frame_type);
-    PRINTADDR(packetbuf_addr(PACKETBUF_ADDR_SENDER));
-    PRINTADDR(packetbuf_addr(PACKETBUF_ADDR_RECEIVER));
-    PRINTF("%d %u (%u)\n", hdr_len, packetbuf_datalen(), packetbuf_totlen());
+    //PRINTF("15.4-IN: %2X", frame.fcf.frame_type);
+    //PRINTADDR(packetbuf_addr(PACKETBUF_ADDR_SENDER));
+    //PRINTADDR(packetbuf_addr(PACKETBUF_ADDR_RECEIVER));
+    //PRINTF("%d %u (%u)\n", hdr_len, packetbuf_datalen(), packetbuf_totlen());
 
     return hdr_len;
   }

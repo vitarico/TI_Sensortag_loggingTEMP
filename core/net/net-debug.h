@@ -44,7 +44,7 @@
 
 #include "net/ip/uip.h"
 #include "net/linkaddr.h"
-#include <stdio.h>
+//#include <stdio.h>
 
 void net_debug_lladdr_print(const uip_lladdr_t *addr);
 
@@ -56,16 +56,16 @@ void net_debug_lladdr_print(const uip_lladdr_t *addr);
 /* PRINTA will always print if the debug routines are called directly */
 #ifdef __AVR__
 #include <avr/pgmspace.h>
-#define PRINTA(FORMAT,args...) printf_P(PSTR(FORMAT),##args)
+//#define PRINTA(FORMAT,args...) printf_P(PSTR(FORMAT),##args)
 #else
-#define PRINTA(...) printf(__VA_ARGS__)
+//#define PRINTA(...) printf(__VA_ARGS__)
 #endif
 
 #if (DEBUG) & DEBUG_ANNOTATE
 #ifdef __AVR__
-#define ANNOTATE(FORMAT,args...) printf_P(PSTR(FORMAT),##args)
+//#define ANNOTATE(FORMAT,args...) printf_P(PSTR(FORMAT),##args)
 #else
-#define ANNOTATE(...) printf(__VA_ARGS__)
+//#define ANNOTATE(...) printf(__VA_ARGS__)
 #endif
 #else
 #define ANNOTATE(...)
@@ -73,11 +73,11 @@ void net_debug_lladdr_print(const uip_lladdr_t *addr);
 
 #if (DEBUG) & DEBUG_PRINT
 #ifdef __AVR__
-#define PRINTF(FORMAT,args...) printf_P(PSTR(FORMAT),##args)
+//#define PRINTF(FORMAT,args...) printf_P(PSTR(FORMAT),##args)
 #else
-#define PRINTF(...) printf(__VA_ARGS__)
+//#define PRINTF(...) printf(__VA_ARGS__)
 #endif
-#define PRINTLLADDR(lladdr) net_debug_lladdr_print(lladdr)
+//#define PRINTLLADDR(lladdr) net_debug_lladdr_print(lladdr)
 #else
 #define PRINTF(...)
 #define PRINTLLADDR(lladdr)

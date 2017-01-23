@@ -58,7 +58,7 @@
 #include "net/ip/uip-debug.h"
 
 #if UIP_LOGGING
-#include <stdio.h>
+//#include <stdio.h>
 void uip_log(char *msg);
 #define UIP_LOG(m) uip_log(m)
 #else
@@ -210,7 +210,7 @@ packet_input(void)
 #if NETSTACK_CONF_WITH_IPV6
       tcpip_ipv6_output();
 #else /* NETSTACK_CONF_WITH_IPV6 */
-      PRINTF("tcpip packet_input output len %d\n", uip_len);
+      //PRINTF("tcpip packet_input output len %d\n", uip_len);
       tcpip_output();
 #endif /* NETSTACK_CONF_WITH_IPV6 */
 #endif /* UIP_CONF_TCP_SPLIT */
@@ -431,9 +431,9 @@ eventhandler(process_event_t ev, process_data_t data)
           tcpip_ipv6_output();
 #else
           if(uip_len > 0) {
-            PRINTF("tcpip_output from periodic len %d\n", uip_len);
+            //PRINTF("tcpip_output from periodic len %d\n", uip_len);
             tcpip_output();
-            PRINTF("tcpip_output after periodic len %d\n", uip_len);
+            //PRINTF("tcpip_output after periodic len %d\n", uip_len);
           }
 #endif /* NETSTACK_CONF_WITH_IPV6 */
         }
@@ -488,7 +488,7 @@ eventhandler(process_event_t ev, process_data_t data)
       tcpip_ipv6_output();
 #else /* NETSTACK_CONF_WITH_IPV6 */
       if(uip_len > 0) {
-        PRINTF("tcpip_output from tcp poll len %d\n", uip_len);
+        //PRINTF("tcpip_output from tcp poll len %d\n", uip_len);
         tcpip_output();
       }
 #endif /* NETSTACK_CONF_WITH_IPV6 */
@@ -551,7 +551,7 @@ tcpip_ipv6_output(void)
 #if UIP_CONF_IPV6_RPL
   if(!rpl_update_header()) {
     /* Packet can not be forwarded */
-    PRINTF("tcpip_ipv6_output: RPL header update error\n");
+    //PRINTF("tcpip_ipv6_output: RPL header update error\n");
     uip_clear_buf();
     return;
   }
@@ -584,11 +584,11 @@ tcpip_ipv6_output(void)
 
       /* No route was found - we send to the default route instead. */
       if(route == NULL) {
-        PRINTF("tcpip_ipv6_output: no route found, using default route\n");
+        //PRINTF("tcpip_ipv6_output: no route found, using default route\n");
         nexthop = uip_ds6_defrt_choose();
         if(nexthop == NULL) {
 #ifdef UIP_FALLBACK_INTERFACE
-          PRINTF("FALLBACK: removing ext hdrs & setting proto %d %d\n",
+          //PRINTF("FALLBACK: removing ext hdrs & setting proto %d %d\n",
               uip_ext_len, *((uint8_t *)UIP_IP_BUF + 40));
           if(uip_ext_len > 0) {
             extern void remove_ext_hdr(void);
@@ -601,14 +601,14 @@ tcpip_ipv6_output(void)
            * not informed routes might get lost unexpectedly until there's a need
            * to send a new packet to the peer */
           if(UIP_FALLBACK_INTERFACE.output() < 0) {
-            PRINTF("FALLBACK: output error. Reporting DST UNREACH\n");
+            //PRINTF("FALLBACK: output error. Reporting DST UNREACH\n");
             uip_icmp6_error_output(ICMP6_DST_UNREACH, ICMP6_DST_UNREACH_ADDR, 0);
             uip_flags = 0;
             tcpip_ipv6_output();
             return;
           }
 #else
-          PRINTF("tcpip_ipv6_output: Destination off-link but no route\n");
+          //PRINTF("tcpip_ipv6_output: Destination off-link but no route\n");
 #endif /* !UIP_FALLBACK_INTERFACE */
           uip_clear_buf();
           return;
@@ -649,9 +649,9 @@ tcpip_ipv6_output(void)
         static uint8_t annotate_has_last = 0;
 
         if(annotate_has_last) {
-          printf("#L %u 0; red\n", annotate_last);
+          //printf("#L %u 0; red\n", annotate_last);
         }
-        printf("#L %u 1; red\n", nexthop->u8[sizeof(uip_ipaddr_t) - 1]);
+        //printf("#L %u 1; red\n", nexthop->u8[sizeof(uip_ipaddr_t) - 1]);
         annotate_last = nexthop->u8[sizeof(uip_ipaddr_t) - 1];
         annotate_has_last = 1;
       }
@@ -665,7 +665,7 @@ tcpip_ipv6_output(void)
 #if UIP_ND6_SEND_NA
       if((nbr = uip_ds6_nbr_add(nexthop, NULL, 0, NBR_INCOMPLETE, NBR_TABLE_REASON_IPV6_ND, NULL)) == NULL) {
         uip_clear_buf();
-        PRINTF("tcpip_ipv6_output: failed to add neighbor to cache\n");
+        //PRINTF("tcpip_ipv6_output: failed to add neighbor to cache\n");
         return;
       } else {
 #if UIP_CONF_IPV6_QUEUE_PKT
@@ -692,14 +692,14 @@ tcpip_ipv6_output(void)
         /* Send the first NS try from here (multicast destination IP address). */
       }
 #else /* UIP_ND6_SEND_NA */
-      PRINTF("tcpip_ipv6_output: neighbor not in cache\n");
+      //PRINTF("tcpip_ipv6_output: neighbor not in cache\n");
       uip_len = 0;
       return;  
 #endif /* UIP_ND6_SEND_NA */
     } else {
 #if UIP_ND6_SEND_NA
       if(nbr->state == NBR_INCOMPLETE) {
-        PRINTF("tcpip_ipv6_output: nbr cache entry incomplete\n");
+        //PRINTF("tcpip_ipv6_output: nbr cache entry incomplete\n");
 #if UIP_CONF_IPV6_QUEUE_PKT
         /* Copy outgoing pkt in the queuing buffer for later transmit and set
            the destination nbr to nbr. */
@@ -717,7 +717,7 @@ tcpip_ipv6_output(void)
         nbr->state = NBR_DELAY;
         stimer_set(&nbr->reachable, UIP_ND6_DELAY_FIRST_PROBE_TIME);
         nbr->nscount = 0;
-        PRINTF("tcpip_ipv6_output: nbr cache entry stale moving to delay\n");
+        //PRINTF("tcpip_ipv6_output: nbr cache entry stale moving to delay\n");
       }
 #endif /* UIP_ND6_SEND_NA */
 

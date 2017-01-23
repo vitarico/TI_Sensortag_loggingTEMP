@@ -84,10 +84,10 @@ extern const struct framer DECORATED_FRAMER;
 
 #define DEBUG 0
 #if DEBUG
-#include <stdio.h>
-#define PRINTF(...) printf(__VA_ARGS__)
+//#include <stdio.h>
+//#define PRINTF(...) printf(__VA_ARGS__)
 #else /* DEBUG */
-#define PRINTF(...)
+//#define PRINTF(...)
 #endif /* DEBUG */
 
 #if LLSEC802154_USES_AUX_HEADER && SEC_LVL && LLSEC802154_USES_FRAME_COUNTER
@@ -183,20 +183,20 @@ parse(void)
   }
   
   if(packetbuf_attr(PACKETBUF_ATTR_SECURITY_LEVEL) != SEC_LVL) {
-    PRINTF("noncoresec: received frame with wrong security level\n");
+    //PRINTF("noncoresec: received frame with wrong security level\n");
     return FRAMER_FAILED;
   }
   sender = packetbuf_addr(PACKETBUF_ADDR_SENDER);
   if(linkaddr_cmp(sender, &linkaddr_node_addr)) {
-    PRINTF("noncoresec: frame from ourselves\n");
+    //PRINTF("noncoresec: frame from ourselves\n");
     return FRAMER_FAILED;
   }
   
   packetbuf_set_datalen(packetbuf_datalen() - MIC_LEN);
   
   if(!aead(result, 0)) {
-    PRINTF("noncoresec: received unauthentic frame %lu\n",
-        anti_replay_get_counter());
+    //PRINTF("noncoresec: received unauthentic frame %lu\n",
+    //    anti_replay_get_counter());
     return FRAMER_FAILED;
   }
   
@@ -204,7 +204,7 @@ parse(void)
   if(!info) {
     info = nbr_table_add_lladdr(anti_replay_table, sender, NBR_TABLE_REASON_LLSEC, NULL);
     if(!info) {
-      PRINTF("noncoresec: could not get nbr_table_item\n");
+      //PRINTF("noncoresec: could not get nbr_table_item\n");
       return FRAMER_FAILED;
     }
     
@@ -221,14 +221,14 @@ parse(void)
      */
     if(!nbr_table_lock(anti_replay_table, info)) {
       nbr_table_remove(anti_replay_table, info);
-      PRINTF("noncoresec: could not lock\n");
+      //PRINTF("noncoresec: could not lock\n");
       return FRAMER_FAILED;
     }
     
     anti_replay_init_info(info);
   } else {
     if(anti_replay_was_replayed(info)) {
-       PRINTF("noncoresec: received replayed frame %lu\n",
+       //PRINTF("noncoresec: received replayed frame %lu\n",
            anti_replay_get_counter());
        return FRAMER_FAILED;
     }

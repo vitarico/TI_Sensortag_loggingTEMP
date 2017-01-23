@@ -31,10 +31,10 @@
  */
 #include "ip64-addr.h"
 
-#include <stdio.h>
+//#include <stdio.h>
 #include <string.h>
 
-#define printf(...)
+//#define printf(...)
 /*---------------------------------------------------------------------------*/
 void
 ip64_addr_copy4(uip_ip4addr_t *dest, const uip_ip4addr_t *src)
@@ -74,9 +74,9 @@ ip64_addr_4to6(const uip_ip4addr_t *ipv4addr,
   ipv6addr->u8[13] = ipv4addr->u8[1];
   ipv6addr->u8[14] = ipv4addr->u8[2];
   ipv6addr->u8[15] = ipv4addr->u8[3];
-  printf("ip64_addr_4to6: IPv6-encoded IPv4 address %d.%d.%d.%d\n",
-	 ipv4addr->u8[0], ipv4addr->u8[1],
-	 ipv4addr->u8[2], ipv4addr->u8[3]);
+  //printf("ip64_addr_4to6: IPv6-encoded IPv4 address %d.%d.%d.%d\n",
+	// ipv4addr->u8[0], ipv4addr->u8[1],
+	// ipv4addr->u8[2], ipv4addr->u8[3]);
 
   /* Conversion succeeded, we return non-zero. */
   return 1;
@@ -110,9 +110,9 @@ ip64_addr_6to4(const uip_ip6addr_t *ipv6addr,
     ipv4addr->u8[2] = ipv6addr->u8[14];
     ipv4addr->u8[3] = ipv6addr->u8[15];
 
-    printf("ip64_addr_6to4: IPv6-encoded IPv4 address %d.%d.%d.%d\n",
-	   ipv4addr->u8[0], ipv4addr->u8[1],
-	   ipv4addr->u8[2], ipv4addr->u8[3]);
+    //printf("ip64_addr_6to4: IPv6-encoded IPv4 address %d.%d.%d.%d\n",
+	  // ipv4addr->u8[0], ipv4addr->u8[1],
+	  // ipv4addr->u8[2], ipv4addr->u8[3]);
 
     /* Conversion succeeded, we return non-zero. */
     return 1;

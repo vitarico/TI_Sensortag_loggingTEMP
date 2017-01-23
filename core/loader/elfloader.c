@@ -40,14 +40,14 @@
 
 #include <stddef.h>
 #include <string.h>
-#include <stdio.h>
+//#include <stdio.h>
 
 #define DEBUG 0
 #if DEBUG
 #include <stdio.h>
-#define PRINTF(...) printf(__VA_ARGS__)
+//#define PRINTF(...) printf(__VA_ARGS__)
 #else
-#define PRINTF(...) do {} while (0)
+//#define PRINTF(...) do {} while (0)
 #endif
 
 #define EI_NIDENT 16
@@ -153,12 +153,12 @@ seek_read(int fd, unsigned int offset, char *buf, int len)
 #if DEBUG
   {
     int i;
-    PRINTF("seek_read: Read len %d from offset %d\n",
+    //PRINTF("seek_read: Read len %d from offset %d\n",
 	   len, offset);
     for(i = 0; i < len; ++i ) {
-      PRINTF("%02x ", buf[i]);
+      //PRINTF("%02x ", buf[i]);
     }
-    printf("\n");
+    //printf("\n");
   }
 #endif /* DEBUG */
 }
@@ -239,13 +239,13 @@ relocate_section(int fd,
 	      (char *)&s, sizeof(s));
     if(s.st_name != 0) {
       seek_read(fd, strtab + s.st_name, name, sizeof(name));
-      PRINTF("name: %s\n", name);
+      //PRINTF("name: %s\n", name);
       addr = (char *)symtab_lookup(name);
       /* ADDED */
       if(addr == NULL) {
-	PRINTF("name not found in global: %s\n", name);
+	//PRINTF("name not found in global: %s\n", name);
 	addr = find_local_symbol(fd, name, symtab, symtabsize, strtab);
-	PRINTF("found address %p\n", addr);
+	//PRINTF("found address %p\n", addr);
       }
       if(addr == NULL) {
 	if(s.st_shndx == bss.number) {
@@ -257,7 +257,7 @@ relocate_section(int fd,
 	} else if(s.st_shndx == text.number) {
 	  sect = &text;
 	} else {
-	  PRINTF("elfloader unknown name: '%30s'\n", name);
+	  //PRINTF("elfloader unknown name: '%30s'\n", name);
 	  memcpy(elfloader_unknown, name, sizeof(elfloader_unknown));
 	  elfloader_unknown[sizeof(elfloader_unknown) - 1] = 0;
 	  return ELFLOADER_SYMBOL_NOT_FOUND;
@@ -369,7 +369,7 @@ elfloader_load(int fd)
       print_chars(elf_magic_header, sizeof(elf_magic_header));*/
   /* Make sure that we have a correct and compatible ELF header. */
   if(memcmp(ehdr.e_ident, elf_magic_header, sizeof(elf_magic_header)) != 0) {
-    PRINTF("ELF header problems\n");
+    //PRINTF("ELF header problems\n");
     return ELFLOADER_BAD_ELF_HEADER;
   }
 
@@ -381,7 +381,7 @@ elfloader_load(int fd)
   shdrsize = ehdr.e_shentsize;
   shdrnum = ehdr.e_shnum;
 
-  PRINTF("Section header: size %d num %d\n", shdrsize, shdrnum);
+  //PRINTF("Section header: size %d num %d\n", shdrsize, shdrnum);
   
   /* The string table section: holds the names of the sections. */
   seek_read(fd, ehdr.e_shoff + shdrsize * ehdr.e_shstrndx,
@@ -392,7 +392,7 @@ elfloader_load(int fd)
      file (these are in the sybtam section). */
   strs = strtable.sh_offset;
 
-  PRINTF("Strtable offset %d\n", strs);
+  //PRINTF("Strtable offset %d\n", strs);
   
   /* Go through all sections and pick out the relevant ones. The
      ".text" segment holds the actual code from the ELF file, the
@@ -425,7 +425,7 @@ elfloader_load(int fd)
     /* The name of the section is contained in the strings table. */
     nameptr = strs + shdr.sh_name;
     seek_read(fd, nameptr, name, sizeof(name));
-    PRINTF("Section shdrptr 0x%x, %d + %d type %d\n",
+    //PRINTF("Section shdrptr 0x%x, %d + %d type %d\n",
 	   shdrptr,
 	   strs, shdr.sh_name,
 	   (int)shdr.sh_type);
@@ -435,11 +435,11 @@ elfloader_load(int fd)
     /* added support for .rodata, .rel.text and .rel.data). */
 
     if(shdr.sh_type == SHT_SYMTAB/*strncmp(name, ".symtab", 7) == 0*/) {
-      PRINTF("symtab\n");
+      //PRINTF("symtab\n");
       symtaboff = shdr.sh_offset;
       symtabsize = shdr.sh_size;
     } else if(shdr.sh_type == SHT_STRTAB/*strncmp(name, ".strtab", 7) == 0*/) {
-      PRINTF("strtab\n");
+      //PRINTF("strtab\n");
       strtaboff = shdr.sh_offset;
       strtabsize = shdr.sh_size;
     } else if(strncmp(name, ".text", 5) == 0) {
@@ -504,22 +504,22 @@ elfloader_load(int fd)
     return ELFLOADER_NO_TEXT;
   }
 
-  PRINTF("before allocate ram\n");
+  //PRINTF("before allocate ram\n");
   bss.address = (char *)elfloader_arch_allocate_ram(bsssize + datasize);
   data.address = (char *)bss.address + bsssize;
-  PRINTF("before allocate rom\n");
+  //PRINTF("before allocate rom\n");
   text.address = (char *)elfloader_arch_allocate_rom(textsize + rodatasize);
   rodata.address = (char *)text.address + textsize;
   
 
-  PRINTF("bss base address: bss.address = 0x%08x\n", bss.address);
-  PRINTF("data base address: data.address = 0x%08x\n", data.address);
-  PRINTF("text base address: text.address = 0x%08x\n", text.address);
-  PRINTF("rodata base address: rodata.address = 0x%08x\n", rodata.address);
+  //PRINTF("bss base address: bss.address = 0x%08x\n", bss.address);
+  //PRINTF("data base address: data.address = 0x%08x\n", data.address);
+  //PRINTF("text base address: text.address = 0x%08x\n", text.address);
+  //PRINTF("rodata base address: rodata.address = 0x%08x\n", rodata.address);
 
 
   /* If we have text segment relocations, we process them. */
-  PRINTF("elfloader: relocate text\n");
+  //PRINTF("elfloader: relocate text\n");
   if(textrelasize > 0) {
 	    ret = relocate_section(fd,
 			   textrelaoff, textrelasize,
@@ -534,7 +534,7 @@ elfloader_load(int fd)
   }
 
   /* If we have any rodata segment relocations, we process them too. */
-  PRINTF("elfloader: relocate rodata\n");
+  //PRINTF("elfloader: relocate rodata\n");
   if(rodatarelasize > 0) {
     ret = relocate_section(fd,
 			   rodatarelaoff, rodatarelasize,
@@ -544,13 +544,13 @@ elfloader_load(int fd)
 			   strtaboff,
 			   symtaboff, symtabsize, using_relas);
     if(ret != ELFLOADER_OK) {
-      PRINTF("elfloader: data failed\n");
+      //PRINTF("elfloader: data failed\n");
       return ret;
     }
   }
 
   /* If we have any data segment relocations, we process them too. */
-  PRINTF("elfloader: relocate data\n");
+  //PRINTF("elfloader: relocate data\n");
   if(datarelasize > 0) {
     ret = relocate_section(fd,
 			   datarelaoff, datarelasize,
@@ -560,7 +560,7 @@ elfloader_load(int fd)
 			   strtaboff,
 			   symtaboff, symtabsize, using_relas);
     if(ret != ELFLOADER_OK) {
-      PRINTF("elfloader: data failed\n");
+      //PRINTF("elfloader: data failed\n");
       return ret;
     }
   }
@@ -572,17 +572,17 @@ elfloader_load(int fd)
   memset(bss.address, 0, bsssize);
   seek_read(fd, dataoff, data.address, datasize);
 
-  PRINTF("elfloader: autostart search\n");
+  //PRINTF("elfloader: autostart search\n");
   process = (struct process **) find_local_symbol(fd, "autostart_processes", symtaboff, symtabsize, strtaboff);
   if(process != NULL) {
-    PRINTF("elfloader: autostart found\n");
+    //PRINTF("elfloader: autostart found\n");
     elfloader_autostart_processes = process;
     return ELFLOADER_OK;
   } else {
-    PRINTF("elfloader: no autostart\n");
+    //PRINTF("elfloader: no autostart\n");
     process = (struct process **) find_program_processes(fd, symtaboff, symtabsize, strtaboff);
     if(process != NULL) {
-      PRINTF("elfloader: FOUND PRG\n");
+      //PRINTF("elfloader: FOUND PRG\n");
     }
     return ELFLOADER_NO_STARTPOINT;
   }

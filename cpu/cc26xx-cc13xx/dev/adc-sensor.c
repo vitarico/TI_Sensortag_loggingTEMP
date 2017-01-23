@@ -47,7 +47,7 @@
 #include "driverlib/aux_adc.h"
 #include "aux-ctrl.h"
 
-#include <stdio.h>
+//#include <stdio.h>
 #include <stdbool.h>
 /*---------------------------------------------------------------------------*/
 static uint8_t channel = ADC_COMPB_IN_AUXIO0;
@@ -110,7 +110,7 @@ value(int type)
     int val;
 
     if(!is_active) {
-      puts("ADC not active");
+      //puts("ADC not active");
       return 0;
     }
 

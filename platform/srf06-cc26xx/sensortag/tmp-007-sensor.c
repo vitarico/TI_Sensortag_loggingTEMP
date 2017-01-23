@@ -46,12 +46,12 @@
 
 #include <stdint.h>
 #include <string.h>
-#include <stdio.h>
+//#include <stdio.h>
 #include <math.h>
 /*---------------------------------------------------------------------------*/
 #define DEBUG 0
 #if DEBUG
-#define PRINTF(...) printf(__VA_ARGS__)
+//#define PRINTF(...) printf(__VA_ARGS__)
 #else
 #define PRINTF(...)
 #endif
@@ -113,7 +113,7 @@ static void
 notify_ready(void *not_used)
 {
   enabled = SENSOR_STATUS_READY;
-  printf("notify_ready\n");
+  //printf("notify_ready\n");
   sensors_changed(&tmp_007_sensor);
 }
 /*---------------------------------------------------------------------------*/
@@ -220,13 +220,13 @@ value(int type)
 
   if(enabled != SENSOR_STATUS_READY) {
     PRINTF("Sensor disabled or starting up (%d)\n", enabled);
-    printf("Sensor disabled or starting up (%d)\n", enabled);
+    //printf("Sensor disabled or starting up (%d)\n", enabled);
     return CC26XX_SENSOR_READING_ERROR;
   }
 
   if((type & TMP_007_SENSOR_TYPE_ALL) == 0) {
     PRINTF("Invalid type\n");
-    printf("invalid type\n");
+    //printf("invalid type\n");
     return CC26XX_SENSOR_READING_ERROR;
   }
 
@@ -237,27 +237,27 @@ value(int type)
 
     if(rv == 0) {
       return CC26XX_SENSOR_READING_ERROR;
-      printf("reading error tmp");
+      //printf("reading error tmp");
     }
 
     convert(raw_temp, raw_obj_temp, &obj_temp, &amb_temp);
     PRINTF("TMP: %04X %04X       o=%d a=%d\n", raw_temp, raw_obj_temp,
            (int)(obj_temp * 1000), (int)(amb_temp * 1000));
-    printf("DBG TMP: %04X %04X       o=%d a=%d\n", raw_temp, raw_obj_temp,
-           (int)(obj_temp * 1000), (int)(amb_temp * 1000));
+    //printf("DBG TMP: %04X %04X       o=%d a=%d\n", raw_temp, raw_obj_temp,
+    //       (int)(obj_temp * 1000), (int)(amb_temp * 1000));
 
     obj_temp_latched = (int)(obj_temp * 1000);
     amb_temp_latched = (int)(amb_temp * 1000);
     rv = 1;
   } else if(type == TMP_007_SENSOR_TYPE_OBJECT) {
     rv = obj_temp_latched;
-    printf("obj Latched\n");
+    //printf("obj Latched\n");
   } else if(type == TMP_007_SENSOR_TYPE_AMBIENT) {
     rv = amb_temp_latched;
-    printf("amb Latched\n");
+    //printf("amb Latched\n");
   }
 
-  printf("foo boo coo\n");
+  //printf("foo boo coo\n");
 
   return rv;
 }
@@ -286,13 +286,13 @@ configure(int type, int enable)
     break;
   case SENSORS_ACTIVE:
     /* Must be initialised first */
-  printf("trying to acti</deacti\n");
+  //printf("trying to acti</deacti\n");
     if(enabled == SENSOR_STATUS_DISABLED) {
-      printf("early disable \n");
+      //printf("early disable \n");
       return SENSOR_STATUS_DISABLED;
     }
     if(enable) {
-      printf("enable tmp\n");
+      //printf("enable tmp\n");
       enable_sensor(true);
       ctimer_set(&startup_timer, SENSOR_STARTUP_DELAY, notify_ready, NULL);
       enabled = SENSOR_STATUS_NOT_READY;
@@ -300,7 +300,7 @@ configure(int type, int enable)
       ctimer_stop(&startup_timer);
       enable_sensor(false);
       enabled = SENSOR_STATUS_INITIALISED;
-      printf("deactivate temp sensor\n");
+      //printf("deactivate temp sensor\n");
     }
     break;
   default:

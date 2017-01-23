@@ -53,8 +53,8 @@
 
 #define DEBUG 0
 #if DEBUG
-#include <stdio.h>
-#define PRINTF(...) printf(__VA_ARGS__)
+//#include <stdio.h>
+//#define PRINTF(...) printf(__VA_ARGS__)
 #else
 #define PRINTF(...)
 #endif
@@ -123,7 +123,7 @@ send_one_packet(mac_callback_t sent, void *ptr)
 
   if(NETSTACK_FRAMER.create() < 0) {
     /* Failed to allocate space for headers */
-    PRINTF("nullrdc: send failed, too large header\n");
+    //PRINTF("nullrdc: send failed, too large header\n");
     ret = MAC_TX_ERR_FATAL;
   } else {
 #if NULLRDC_802154_AUTOACK

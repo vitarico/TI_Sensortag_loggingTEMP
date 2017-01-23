@@ -67,10 +67,10 @@ extern const struct framer DECORATED_FRAMER;
 
 #define DEBUG 0
 #if DEBUG
-#include <stdio.h>
-#define PRINTF(...) printf(__VA_ARGS__)
+//#include <stdio.h>
+//#define PRINTF(...) printf(__VA_ARGS__)
 #else
-#define PRINTF(...)
+//#define PRINTF(...)
 #endif
 
 static void pad(void);
@@ -96,7 +96,7 @@ create(void)
   int hdr_len;
   
   if(packetbuf_hdralloc(sizeof(struct hdr)) == 0) {
-    PRINTF("contikimac-framer: too large header\n");
+    //PRINTF("contikimac-framer: too large header\n");
     return FRAMER_FAILED;
   }
   chdr = packetbuf_hdrptr();
@@ -106,7 +106,7 @@ create(void)
   
   hdr_len = DECORATED_FRAMER.create();
   if(hdr_len < 0) {
-    PRINTF("contikimac-framer: decorated framer failed\n");
+    //PRINTF("contikimac-framer: decorated framer failed\n");
     return FRAMER_FAILED;
   }
   
@@ -145,12 +145,12 @@ parse(void)
   
   chdr = packetbuf_dataptr();
   if(chdr->id != CONTIKIMAC_ID) {
-    PRINTF("contikimac-framer: CONTIKIMAC_ID is missing\n");
+    //PRINTF("contikimac-framer: CONTIKIMAC_ID is missing\n");
     return FRAMER_FAILED;
   }
   
   if(!packetbuf_hdrreduce(sizeof(struct hdr))) {
-    PRINTF("contikimac-framer: packetbuf_hdrreduce failed\n");
+    //PRINTF("contikimac-framer: packetbuf_hdrreduce failed\n");
     return FRAMER_FAILED;
   }
   

@@ -35,7 +35,7 @@
 
 #include "contiki.h"
 
-#include <stdio.h>
+//#include <stdio.h>
 #include <stdint.h>
 
 /* some constants for the configure API */

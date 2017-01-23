@@ -56,7 +56,7 @@
 #endif
 
 #include <string.h>
-#include <stdio.h>
+//#include <stdio.h>
 #include <stddef.h>
 
 struct adv_msg {
@@ -65,8 +65,8 @@ struct adv_msg {
 
 #define DEBUG 0
 #if DEBUG
-#include <stdio.h>
-#define PRINTF(...) printf(__VA_ARGS__)
+//#include <stdio.h>
+//#define PRINTF(...) printf(__VA_ARGS__)
 #else
 #define PRINTF(...)
 #endif

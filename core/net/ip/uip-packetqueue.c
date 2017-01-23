@@ -1,4 +1,4 @@
-#include <stdio.h>
+//#include <stdio.h>
 
 #include "net/ip/uip.h"
 
@@ -11,10 +11,10 @@ MEMB(packets_memb, struct uip_packetqueue_packet, MAX_NUM_QUEUED_PACKETS);
 
 #define DEBUG 0
 #if DEBUG
-#include <stdio.h>
-#define PRINTF(...) printf(__VA_ARGS__)
+//#include <stdio.h>
+//#define PRINTF(...) printf(__VA_ARGS__)
 #else
-#define PRINTF(...)
+//#define PRINTF(...)
 #endif
 
 /*---------------------------------------------------------------------------*/
@@ -23,7 +23,7 @@ packet_timedout(void *ptr)
 {
   struct uip_packetqueue_handle *h = ptr;
 
-  PRINTF("uip_packetqueue_free timed out %p\n", h);
+  //PRINTF("uip_packetqueue_free timed out %p\n", h);
   memb_free(&packets_memb, h->packet);
   h->packet = NULL;
 }
@@ -31,16 +31,16 @@ packet_timedout(void *ptr)
 void
 uip_packetqueue_new(struct uip_packetqueue_handle *handle)
 {
-  PRINTF("uip_packetqueue_new %p\n", handle);
+  //PRINTF("uip_packetqueue_new %p\n", handle);
   handle->packet = NULL;
 }
 /*---------------------------------------------------------------------------*/
 struct uip_packetqueue_packet *
 uip_packetqueue_alloc(struct uip_packetqueue_handle *handle, clock_time_t lifetime)
 {
-  PRINTF("uip_packetqueue_alloc %p\n", handle);
+  //PRINTF("uip_packetqueue_alloc %p\n", handle);
   if(handle->packet != NULL) {
-    PRINTF("alloced\n");
+    //PRINTF("alloced\n");
     return NULL;
   }
   handle->packet = memb_alloc(&packets_memb);
@@ -48,7 +48,7 @@ uip_packetqueue_alloc(struct uip_packetqueue_handle *handle, clock_time_t lifeti
     ctimer_set(&handle->packet->lifetimer, lifetime,
                packet_timedout, handle);
   } else {
-    PRINTF("uip_packetqueue_alloc failed\n");
+    //PRINTF("uip_packetqueue_alloc failed\n");
   }
   return handle->packet;
 }
@@ -56,7 +56,7 @@ uip_packetqueue_alloc(struct uip_packetqueue_handle *handle, clock_time_t lifeti
 void
 uip_packetqueue_free(struct uip_packetqueue_handle *handle)
 {
-  PRINTF("uip_packetqueue_free %p\n", handle);
+  //PRINTF("uip_packetqueue_free %p\n", handle);
   if(handle->packet != NULL) {
     ctimer_stop(&handle->packet->lifetimer);
     memb_free(&packets_memb, handle->packet);

@@ -30,7 +30,7 @@
  *
  */
 
-#include <stdio.h>
+//#include <stdio.h>
 #include <avr/boot.h>
 #include <avr/pgmspace.h>
 #include <avr/interrupt.h>
@@ -63,9 +63,9 @@
 #define DEBUG 0
 #if DEBUG
 #include <avr/pgmspace.h>
-#define PRINTF(FORMAT,args...) printf_P(PSTR(FORMAT),##args)
+//#define PRINTF(FORMAT,args...) printf_P(PSTR(FORMAT),##args)
 #else
-#define PRINTF(...)
+//#define PRINTF(...)
 #endif
 
 static struct mmem module_heap;
@@ -192,8 +192,8 @@ elfloader_arch_relocate(int fd, unsigned int sectionoffset,
   switch(type) {
   case R_AVR_NONE:
   case R_AVR_32:
-    PRINTF(PSTR ("elfloader-avr.c: unsupported relocation type: "));
-    PRINTF("%d\n", type);
+    //PRINTF(PSTR ("elfloader-avr.c: unsupported relocation type: "));
+    //PRINTF("%d\n", type);
     break;
 
   case R_AVR_7_PCREL: { /* 4 */
@@ -309,7 +309,7 @@ elfloader_arch_relocate(int fd, unsigned int sectionoffset,
     break;
 
   default:
-    PRINTF(PSTR ("Unknown relocation type!\n"));
+    //PRINTF(PSTR ("Unknown relocation type!\n"));
     break;
   }
 }

@@ -37,7 +37,7 @@
  *         Adam Dunkels <adam@sics.se>
  */
 
-#include <stdio.h>
+//#include <stdio.h>
 
 #include "net/ipv4/uip-fw.h"
 #include "net/ipv4/uip-over-mesh.h"
@@ -64,10 +64,10 @@ static struct trickle_conn gateway_announce_conn;
 
 #define DEBUG 0
 #if DEBUG
-#include <stdio.h>
-#define PRINTF(...) printf(__VA_ARGS__)
+//#include <stdio.h>
+//#define PRINTF(...) printf(__VA_ARGS__)
 #else
-#define PRINTF(...)
+//#define PRINTF(...)
 #endif
 
 #define BUF ((struct uip_tcpip_hdr *)&uip_buf[UIP_LLH_LEN])
@@ -105,17 +105,17 @@ recv_data(struct unicast_conn *c, const linkaddr_t *from)
   }
 
 
-  PRINTF("uip-over-mesh: %d.%d: recv_data with len %d\n",
-	 linkaddr_node_addr.u8[0], linkaddr_node_addr.u8[1], uip_len);
+  //PRINTF("uip-over-mesh: %d.%d: recv_data with len %d\n",
+	// linkaddr_node_addr.u8[0], linkaddr_node_addr.u8[1], uip_len);
   tcpip_input();
 }
 /*---------------------------------------------------------------------------*/
 static void
 send_data(linkaddr_t *next)
 {
-  PRINTF("uip-over-mesh: %d.%d: send_data with len %d\n",
-	 linkaddr_node_addr.u8[0], linkaddr_node_addr.u8[1],
-	 packetbuf_totlen());
+  //PRINTF("uip-over-mesh: %d.%d: send_data with len %d\n",
+	// linkaddr_node_addr.u8[0], linkaddr_node_addr.u8[1],
+	// packetbuf_totlen());
   unicast_send(&dataconn, next);
 }
 /*---------------------------------------------------------------------------*/
@@ -125,7 +125,7 @@ new_route(struct route_discovery_conn *c, const linkaddr_t *to)
   struct route_entry *rt;
   
   if(queued_packet) {
-    PRINTF("uip-over-mesh: new route, sending queued packet\n");
+    //PRINTF("uip-over-mesh: new route, sending queued packet\n");
     
     queuebuf_to_packetbuf(queued_packet);
     queuebuf_free(queued_packet);
@@ -142,9 +142,9 @@ new_route(struct route_discovery_conn *c, const linkaddr_t *to)
 static void
 timedout(struct route_discovery_conn *c)
 {
-  PRINTF("uip-over-mesh: packet timed out\n");
+  //PRINTF("uip-over-mesh: packet timed out\n");
   if(queued_packet) {
-    PRINTF("uip-over-mesh: freeing queued packet\n");
+  //  PRINTF("uip-over-mesh: freeing queued packet\n");
     queuebuf_free(queued_packet);
     queued_packet = NULL;
   }
@@ -164,9 +164,9 @@ gateway_announce_recv(struct trickle_conn *c)
 {
   struct gateway_msg *msg;
   msg = packetbuf_dataptr();
-  PRINTF("%d.%d: gateway message: %d.%d\n",
-	 linkaddr_node_addr.u8[0], linkaddr_node_addr.u8[1],
-	 msg->gateway.u8[0], msg->gateway.u8[1]);
+  //PRINTF("%d.%d: gateway message: %d.%d\n",
+	// linkaddr_node_addr.u8[0], linkaddr_node_addr.u8[1],
+	// msg->gateway.u8[0], msg->gateway.u8[1]);
 
   if(!is_gateway) {
     uip_over_mesh_set_gateway(&msg->gateway);
@@ -181,8 +181,8 @@ uip_over_mesh_make_announced_gateway(void)
   /* Make this node the gateway node, unless it already is the
      gateway. */
   if(!is_gateway) {
-    PRINTF("%d.%d: making myself the gateway\n",
-	   linkaddr_node_addr.u8[0], linkaddr_node_addr.u8[1]);
+    //PRINTF("%d.%d: making myself the gateway\n",
+	  // linkaddr_node_addr.u8[0], linkaddr_node_addr.u8[1]);
     uip_over_mesh_set_gateway(&linkaddr_node_addr);
     linkaddr_copy(&(msg.gateway), &linkaddr_node_addr);
     packetbuf_copyfrom(&msg, sizeof(struct gateway_msg));
@@ -196,10 +196,10 @@ void
 uip_over_mesh_init(uint16_t channels)
 {
 
-  PRINTF("Our address is %d.%d (%d.%d.%d.%d)\n",
-	 linkaddr_node_addr.u8[0], linkaddr_node_addr.u8[1],
-	 uip_hostaddr.u8[0], uip_hostaddr.u8[1],
-	 uip_hostaddr.u8[2], uip_hostaddr.u8[3]);
+ // PRINTF("Our address is %d.%d (%d.%d.%d.%d)\n",
+	// linkaddr_node_addr.u8[0], linkaddr_node_addr.u8[1],
+	// uip_hostaddr.u8[0], uip_hostaddr.u8[1],
+	// uip_hostaddr.u8[2], uip_hostaddr.u8[3]);
 
   unicast_open(&dataconn, channels, &data_callbacks);
   route_discovery_open(&route_discovery, ROUTE_DISCOVERY_INTERVAL,
@@ -232,26 +232,26 @@ uip_over_mesh_send(void)
     receiver.u8[1] = BUF->destipaddr.u8[3];
   } else {
     if(linkaddr_cmp(&gateway, &linkaddr_node_addr)) {
-      PRINTF("uip_over_mesh_send: I am gateway, packet to %d.%d.%d.%d to local interface\n",
-	     uip_ipaddr_to_quad(&BUF->destipaddr));
+    //  PRINTF("uip_over_mesh_send: I am gateway, packet to %d.%d.%d.%d to local interface\n",
+	  //   uip_ipaddr_to_quad(&BUF->destipaddr));
       if(gw_netif != NULL) {
 	return gw_netif->output();
       }
       return UIP_FW_DROPPED;
     } else if(linkaddr_cmp(&gateway, &linkaddr_null)) {
-      PRINTF("uip_over_mesh_send: No gateway setup, dropping packet\n");
+    //  PRINTF("uip_over_mesh_send: No gateway setup, dropping packet\n");
       return UIP_FW_OK;
     } else {
-      PRINTF("uip_over_mesh_send: forwarding packet to %d.%d.%d.%d towards gateway %d.%d\n",
-	     uip_ipaddr_to_quad(&BUF->destipaddr),
-	     gateway.u8[0], gateway.u8[1]);
+    //  PRINTF("uip_over_mesh_send: forwarding packet to %d.%d.%d.%d towards gateway %d.%d\n",
+	  //   uip_ipaddr_to_quad(&BUF->destipaddr),
+	  //   gateway.u8[0], gateway.u8[1]);
       linkaddr_copy(&receiver, &gateway);
     }
   }
 
-  PRINTF("uIP over mesh send to %d.%d with len %d\n",
-	 receiver.u8[0], receiver.u8[1],
-	 uip_len);
+  //PRINTF("uIP over mesh send to %d.%d with len %d\n",
+	// receiver.u8[0], receiver.u8[1],
+	// uip_len);
   
   
   packetbuf_copyfrom(&uip_buf[UIP_LLH_LEN], uip_len);
@@ -269,7 +269,7 @@ uip_over_mesh_send(void)
 
   rt = route_lookup(&receiver);
   if(rt == NULL) {
-    PRINTF("uIP over mesh no route to %d.%d\n", receiver.u8[0], receiver.u8[1]);
+   // PRINTF("uIP over mesh no route to %d.%d\n", receiver.u8[0], receiver.u8[1]);
     if(queued_packet == NULL) {
       queued_packet = queuebuf_new_from_packetbuf();
       linkaddr_copy(&queued_receiver, &receiver);

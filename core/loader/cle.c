@@ -32,7 +32,7 @@
  * The Contiki dynamic Link Editor (CLE), ELF version.
  */
 
-#include <stdio.h>
+//#include <stdio.h>
 #include <string.h>
 
 #include "contiki.h"
@@ -45,9 +45,9 @@
 #include "lib/assert.h"
 
 #ifdef NDEBUG
-#define PRINTF(...) do {} while (0)
+//#define PRINTF(...) do {} while (0)
 #else
-#define PRINTF(...) printf(__VA_ARGS__)
+//#define PRINTF(...) printf(__VA_ARGS__)
 #endif
 
 #define NOLL 0
@@ -164,7 +164,7 @@ cle_read_info(struct cle_info *info,
       info->bss_shndx = i;
     } else {
       info->name[sizeof(info->name) - 1] = 0;
-      PRINTF("cle: unknown section %.12s\n", info->name);
+      //PRINTF("cle: unknown section %.12s\n", info->name);
     }
 
     /* Move on to the next section header. */
@@ -247,11 +247,11 @@ cle_relocate(struct cle_info *info,
       } else if(addr != NOLL && sym == NOLL) { /* Exported symbol. */
 	addr = addr + s.st_value;
       } else if(addr == NOLL && sym == NOLL) {
-	PRINTF("cle: undefined reference to %.32s (%d)\n",
+	//PRINTF("cle: undefined reference to %.32s (%d)\n",
 	       info->name, s.st_info);
 	return CLE_UNDEFINED;	/* Or COMMON symbol. */
       } else if(addr != NOLL && sym != NOLL) {
-	PRINTF("cle: multiple definitions of %.32s (%d)\n",
+	//PRINTF("cle: multiple definitions of %.32s (%d)\n",
 	       info->name, s.st_info);
 	return CLE_MULTIPLY_DEFINED;
       }

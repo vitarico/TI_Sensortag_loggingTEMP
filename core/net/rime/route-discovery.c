@@ -48,7 +48,7 @@
 #include "net/rime/route-discovery.h"
 
 #include <stddef.h> /* For offsetof */
-#include <stdio.h>
+//#include <stdio.h>
 
 struct route_msg {
   linkaddr_t dest;
@@ -70,8 +70,8 @@ struct rrep_hdr {
 
 #define DEBUG 0
 #if DEBUG
-#include <stdio.h>
-#define PRINTF(...) printf(__VA_ARGS__)
+//#include <stdio.h>
+//#define PRINTF(...) printf(__VA_ARGS__)
 #else
 #define PRINTF(...)
 #endif

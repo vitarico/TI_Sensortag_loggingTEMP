@@ -52,7 +52,9 @@
 #include "net/llsec/anti-replay.h"
 #include "lib/ccm-star.h"
 #include "lib/aes-128.h"
-#include <stdio.h>
+//#include <stdio.h>
+#define PRINTF(...)
+
 #include <string.h>
 
 #if TSCH_LOG_LEVEL >= 1

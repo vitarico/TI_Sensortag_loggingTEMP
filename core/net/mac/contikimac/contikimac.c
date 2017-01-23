@@ -232,7 +232,7 @@ static int we_are_receiving_burst = 0;
 
 #define ACK_LEN 3
 
-#include <stdio.h>
+//#include <stdio.h>
 static struct rtimer rt;
 static struct pt pt;
 
@@ -244,12 +244,12 @@ static volatile unsigned char radio_is_on = 0;
 
 #define DEBUG 0
 #if DEBUG
-#include <stdio.h>
-#define PRINTF(...) printf(__VA_ARGS__)
-#define PRINTDEBUG(...) printf(__VA_ARGS__)
+//#include <stdio.h>
+//#define PRINTF(...) printf(__VA_ARGS__)
+//#define PRINTDEBUG(...) printf(__VA_ARGS__)
 #else
-#define PRINTF(...)
-#define PRINTDEBUG(...)
+//#define PRINTF(...)
+//#define PRINTDEBUG(...)
 #endif
 
 #if CONTIKIMAC_CONF_COMPOWER
@@ -315,7 +315,7 @@ schedule_powercycle(struct rtimer *t, rtimer_clock_t time)
     r = rtimer_set(t, time, 1, powercycle_wrapper, NULL);
 
     if(r != RTIMER_OK) {
-      PRINTF("schedule_powercycle: could not set rtimer\n");
+      //PRINTF("schedule_powercycle: could not set rtimer\n");
     }
   }
 }
@@ -335,7 +335,7 @@ schedule_powercycle_fixed(struct rtimer *t, rtimer_clock_t fixed_time)
 
     r = rtimer_set(t, fixed_time, 1, powercycle_wrapper, NULL);
     if(r != RTIMER_OK) {
-      PRINTF("schedule_powercycle: could not set rtimer\n");
+      //PRINTF("schedule_powercycle: could not set rtimer\n");
     }
   }
 }
@@ -564,12 +564,12 @@ send_packet(mac_callback_t mac_callback, void *mac_callback_ptr,
 
   /* Exit if RDC and radio were explicitly turned off */
    if(!contikimac_is_on && !contikimac_keep_radio_on) {
-    PRINTF("contikimac: radio is turned off\n");
+    //PRINTF("contikimac: radio is turned off\n");
     return MAC_TX_ERR_FATAL;
   }
 
   if(packetbuf_totlen() == 0) {
-    PRINTF("contikimac: send_packet data len 0\n");
+    //PRINTF("contikimac: send_packet data len 0\n");
     return MAC_TX_ERR_FATAL;
   }
 
@@ -579,33 +579,33 @@ send_packet(mac_callback_t mac_callback, void *mac_callback_ptr,
 #endif
   if(packetbuf_holds_broadcast()) {
     is_broadcast = 1;
-    PRINTDEBUG("contikimac: send broadcast\n");
+    //PRINTDEBUG("contikimac: send broadcast\n");
 
     if(broadcast_rate_drop()) {
       return MAC_TX_COLLISION;
     }
   } else {
 #if NETSTACK_CONF_WITH_IPV6
-    PRINTDEBUG("contikimac: send unicast to %02x%02x:%02x%02x:%02x%02x:%02x%02x\n",
-               packetbuf_addr(PACKETBUF_ADDR_RECEIVER)->u8[0],
-               packetbuf_addr(PACKETBUF_ADDR_RECEIVER)->u8[1],
-               packetbuf_addr(PACKETBUF_ADDR_RECEIVER)->u8[2],
-               packetbuf_addr(PACKETBUF_ADDR_RECEIVER)->u8[3],
-               packetbuf_addr(PACKETBUF_ADDR_RECEIVER)->u8[4],
-               packetbuf_addr(PACKETBUF_ADDR_RECEIVER)->u8[5],
-               packetbuf_addr(PACKETBUF_ADDR_RECEIVER)->u8[6],
-               packetbuf_addr(PACKETBUF_ADDR_RECEIVER)->u8[7]);
+    //PRINTDEBUG("contikimac: send unicast to %02x%02x:%02x%02x:%02x%02x:%02x%02x\n",
+    //           packetbuf_addr(PACKETBUF_ADDR_RECEIVER)->u8[0],
+    //           packetbuf_addr(PACKETBUF_ADDR_RECEIVER)->u8[1],
+    //           packetbuf_addr(PACKETBUF_ADDR_RECEIVER)->u8[2],
+    //           packetbuf_addr(PACKETBUF_ADDR_RECEIVER)->u8[3],
+    //           packetbuf_addr(PACKETBUF_ADDR_RECEIVER)->u8[4],
+    //           packetbuf_addr(PACKETBUF_ADDR_RECEIVER)->u8[5],
+    //           packetbuf_addr(PACKETBUF_ADDR_RECEIVER)->u8[6],
+    //           packetbuf_addr(PACKETBUF_ADDR_RECEIVER)->u8[7]);
 #else /* NETSTACK_CONF_WITH_IPV6 */
-    PRINTDEBUG("contikimac: send unicast to %u.%u\n",
-               packetbuf_addr(PACKETBUF_ADDR_RECEIVER)->u8[0],
-               packetbuf_addr(PACKETBUF_ADDR_RECEIVER)->u8[1]);
+    //PRINTDEBUG("contikimac: send unicast to %u.%u\n",
+    //           packetbuf_addr(PACKETBUF_ADDR_RECEIVER)->u8[0],
+    //           packetbuf_addr(PACKETBUF_ADDR_RECEIVER)->u8[1]);
 #endif /* NETSTACK_CONF_WITH_IPV6 */
   }
 
   if(!packetbuf_attr(PACKETBUF_ATTR_IS_CREATED_AND_SECURED)) {
     packetbuf_set_attr(PACKETBUF_ATTR_MAC_ACK, 1);
     if(NETSTACK_FRAMER.create() < 0) {
-      PRINTF("contikimac: framer failed\n");
+    //  PRINTF("contikimac: framer failed\n");
       return MAC_TX_ERR_FATAL;
     }
   }
@@ -640,8 +640,8 @@ send_packet(mac_callback_t mac_callback, void *mac_callback_ptr,
      instread. */
   if(NETSTACK_RADIO.receiving_packet() || NETSTACK_RADIO.pending_packet()) {
     we_are_sending = 0;
-    PRINTF("contikimac: collision receiving %d, pending %d\n",
-           NETSTACK_RADIO.receiving_packet(), NETSTACK_RADIO.pending_packet());
+    //PRINTF("contikimac: collision receiving %d, pending %d\n",
+    //       NETSTACK_RADIO.receiving_packet(), NETSTACK_RADIO.pending_packet());
     return MAC_TX_COLLISION;
   }
 
@@ -688,7 +688,7 @@ send_packet(mac_callback_t mac_callback, void *mac_callback_ptr,
   if(collisions > 0) {
     we_are_sending = 0;
     off();
-    PRINTF("contikimac: collisions before sending\n");
+    //PRINTF("contikimac: collisions before sending\n");
     contikimac_is_on = contikimac_was_on;
     return MAC_TX_COLLISION;
   }
@@ -714,7 +714,7 @@ send_packet(mac_callback_t mac_callback, void *mac_callback_ptr,
 
     if(!is_broadcast && (is_receiver_awake || is_known_receiver) &&
        !RTIMER_CLOCK_LT(RTIMER_NOW(), t0 + MAX_PHASE_STROBE_TIME)) {
-      PRINTF("miss to %d\n", packetbuf_addr(PACKETBUF_ADDR_RECEIVER)->u8[0]);
+      //PRINTF("miss to %d\n", packetbuf_addr(PACKETBUF_ADDR_RECEIVER)->u8[0]);
       break;
     }
 
@@ -746,7 +746,7 @@ send_packet(mac_callback_t mac_callback, void *mac_callback_ptr,
         }
       } else if (ret == RADIO_TX_NOACK) {
       } else if (ret == RADIO_TX_COLLISION) {
-          PRINTF("contikimac: collisions while sending\n");
+          //PRINTF("contikimac: collisions while sending\n");
           collisions++;
       }
       wt = RTIMER_NOW();
@@ -771,7 +771,7 @@ send_packet(mac_callback_t mac_callback, void *mac_callback_ptr,
 #endif
           break;
         } else {
-          PRINTF("contikimac: collisions while sending\n");
+          //PRINTF("contikimac: collisions while sending\n");
           collisions++;
         }
       }
@@ -781,10 +781,10 @@ send_packet(mac_callback_t mac_callback, void *mac_callback_ptr,
 
   off();
 
-  PRINTF("contikimac: send (strobes=%u, len=%u, %s, %s), done\n", strobes,
-         packetbuf_totlen(),
-         got_strobe_ack ? "ack" : "no ack",
-         collisions ? "collision" : "no collision");
+  //PRINTF("contikimac: send (strobes=%u, len=%u, %s, %s), done\n", strobes,
+  //       packetbuf_totlen(),
+  //       got_strobe_ack ? "ack" : "no ack",
+  //       collisions ? "collision" : "no collision");
 
 #if CONTIKIMAC_CONF_COMPOWER
   /* Accumulate the power consumption for the packet transmission. */
@@ -817,9 +817,9 @@ send_packet(mac_callback_t mac_callback, void *mac_callback_ptr,
 
 #if WITH_PHASE_OPTIMIZATION
   if(is_known_receiver && got_strobe_ack) {
-    PRINTF("no miss %d wake-ups %d\n",
-	   packetbuf_addr(PACKETBUF_ADDR_RECEIVER)->u8[0],
-           strobes);
+    //PRINTF("no miss %d wake-ups %d\n",
+	   //packetbuf_addr(PACKETBUF_ADDR_RECEIVER)->u8[0],
+      //     strobes);
   }
 
   if(!is_broadcast) {
@@ -875,7 +875,7 @@ qsend_list(mac_callback_t sent, void *ptr, struct rdc_buf_list *buf_list)
       }
       packetbuf_set_attr(PACKETBUF_ATTR_MAC_ACK, 1);
       if(NETSTACK_FRAMER.create() < 0) {
-        PRINTF("contikimac: framer failed\n");
+        //PRINTF("contikimac: framer failed\n");
         mac_call_sent_callback(sent, ptr, MAC_TX_ERR_FATAL, 1);
         return;
       }
@@ -946,7 +946,7 @@ input_packet(void)
 
   if(packetbuf_datalen() == ACK_LEN) {
     /* Ignore ack packets */
-    PRINTF("ContikiMAC: ignored ack\n");
+    //PRINTF("ContikiMAC: ignored ack\n");
     return;
   }
 
@@ -978,7 +978,7 @@ input_packet(void)
       duplicate = mac_sequence_is_duplicate();
       if(duplicate) {
         /* Drop the packet. */
-        PRINTF("contikimac: Drop duplicate\n");
+        //PRINTF("contikimac: Drop duplicate\n");
       } else {
         mac_sequence_register_seqno();
       }
@@ -998,7 +998,7 @@ input_packet(void)
       compower_clear(&current_packet);
 #endif /* CONTIKIMAC_CONF_COMPOWER */
 
-      PRINTDEBUG("contikimac: data (%u)\n", packetbuf_datalen());
+      //PRINTDEBUG("contikimac: data (%u)\n", packetbuf_datalen());
 
 #if CONTIKIMAC_SEND_SW_ACK
       {
@@ -1025,10 +1025,10 @@ input_packet(void)
       }
       return;
     } else {
-      PRINTDEBUG("contikimac: data not for us\n");
+      //PRINTDEBUG("contikimac: data not for us\n");
     }
   } else {
-    PRINTF("contikimac: failed to parse (%u)\n", packetbuf_totlen());
+    //PRINTF("contikimac: failed to parse (%u)\n", packetbuf_totlen());
   }
 }
 /*---------------------------------------------------------------------------*/

@@ -50,10 +50,10 @@
 #define DEBUG 0
 
 #if DEBUG
-#include <stdio.h>
-#define PRINTF(...) printf(__VA_ARGS__)
+//#include <stdio.h>
+//#define PRINTF(...) printf(__VA_ARGS__)
 #else
-#define PRINTF(...)
+//#define PRINTF(...)
 #endif
 /*---------------------------------------------------------------------------*/
 /**
@@ -159,8 +159,8 @@ get_t(clock_time_t i_cur)
 {
   i_cur >>= 1;
 
-  PRINTF("trickle_timer get t: [%lu, %lu)\n", (unsigned long)i_cur,
-         (unsigned long)(i_cur << 1));
+  //PRINTF("trickle_timer get t: [%lu, %lu)\n", (unsigned long)i_cur,
+    //     (unsigned long)(i_cur << 1));
 
   return i_cur + (tt_rand() % i_cur);
 }
@@ -173,14 +173,14 @@ schedule_for_end(struct trickle_timer *tt)
 
   loc_clock = TRICKLE_TIMER_INTERVAL_END(tt) - now;
 
-  PRINTF("trickle_timer sched for end: at %lu, end in %ld\n",
-         (unsigned long)clock_time(), (signed long)loc_clock);
+ // PRINTF("trickle_timer sched for end: at %lu, end in %ld\n",
+ //        (unsigned long)clock_time(), (signed long)loc_clock);
 
   /* Interval's end will happen in loc_clock ticks. Make sure this isn't in
    * the past... */
   if(loc_clock > (TRICKLE_TIMER_CLOCK_MAX >> 1)) {
     loc_clock = 0; /* Interval ended in the past, schedule for in 0 */
-    PRINTF("trickle_timer doubling: Was in the past. Compensating\n");
+    //PRINTF("trickle_timer doubling: Was in the past. Compensating\n");
   }
 
   ctimer_set(&tt->ct, loc_clock, double_interval, tt);
@@ -198,9 +198,9 @@ double_interval(void *ptr)
 
   loctt->c = 0;
 
-  PRINTF("trickle_timer doubling: at %lu, (was for %lu), ",
-         (unsigned long)clock_time(),
-         (unsigned long)TRICKLE_TIMER_INTERVAL_END(loctt));
+  //PRINTF("trickle_timer doubling: at %lu, (was for %lu), ",
+    //     (unsigned long)clock_time(),
+      //   (unsigned long)TRICKLE_TIMER_INTERVAL_END(loctt));
 
   /* Remember the previous interval's end (absolute time), before we double */
   last_end = TRICKLE_TIMER_INTERVAL_END(loctt);
@@ -209,29 +209,29 @@ double_interval(void *ptr)
   if(loctt->i_cur <= TRICKLE_TIMER_INTERVAL_MAX(loctt) >> 1) {
     /* If I <= Imax/2, we double */
     loctt->i_cur <<= 1;
-    PRINTF("I << 1 = %lu\n", (unsigned long)loctt->i_cur);
+    //PRINTF("I << 1 = %lu\n", (unsigned long)loctt->i_cur);
   } else {
     /* We may have I > Imax/2 but I <> Imax, in which case we set to Imax
      * This will happen when I didn't start as Imin (before the first reset) */
     loctt->i_cur = TRICKLE_TIMER_INTERVAL_MAX(loctt);
-    PRINTF("I = Imax = %lu\n", (unsigned long)loctt->i_cur);
+    //PRINTF("I = Imax = %lu\n", (unsigned long)loctt->i_cur);
   }
 
   /* Random t in [I/2, I) */
   loc_clock = get_t(loctt->i_cur);
 
-  PRINTF("trickle_timer doubling: t=%lu\n", (unsigned long)loc_clock);
+  //PRINTF("trickle_timer doubling: t=%lu\n", (unsigned long)loc_clock);
 
 #if TRICKLE_TIMER_COMPENSATE_DRIFT
   /* Schedule for t ticks after the previous interval's end, not after now. If
    * that is in the past, schedule in 0 */
   loc_clock = (last_end + loc_clock) - clock_time();
-  PRINTF("trickle_timer doubling: at %lu, in %ld ticks\n",
-         (unsigned long)clock_time(), (signed long)loc_clock);
+  //PRINTF("trickle_timer doubling: at %lu, in %ld ticks\n",
+  //       (unsigned long)clock_time(), (signed long)loc_clock);
   if(loc_clock > (TRICKLE_TIMER_CLOCK_MAX >> 1)) {
     /* Oops, that's in the past */
     loc_clock = 0;
-    PRINTF("trickle_timer doubling: Was in the past. Compensating\n");
+    //PRINTF("trickle_timer doubling: Was in the past. Compensating\n");
   }
   ctimer_set(&loctt->ct, loc_clock, fire, loctt);
 
@@ -246,12 +246,12 @@ double_interval(void *ptr)
   loctt->i_start = loctt->ct.etimer.timer.start;
 #endif
 
-  PRINTF("trickle_timer doubling: Last end %lu, new end %lu, for %lu, I=%lu\n",
-         (unsigned long)last_end,
-         (unsigned long)TRICKLE_TIMER_INTERVAL_END(loctt),
-         (unsigned long)(loctt->ct.etimer.timer.start +
-                         loctt->ct.etimer.timer.interval),
-         (unsigned long)(loctt->i_cur));
+  //PRINTF("trickle_timer doubling: Last end %lu, new end %lu, for %lu, I=%lu\n",
+    //     (unsigned long)last_end,
+    //     (unsigned long)TRICKLE_TIMER_INTERVAL_END(loctt),
+    //     (unsigned long)(loctt->ct.etimer.timer.start +
+    //                     loctt->ct.etimer.timer.interval),
+    //     (unsigned long)(loctt->i_cur));
 }
 /*---------------------------------------------------------------------------*/
 /* Called by the ctimer module at time t within the current interval. ptr is
@@ -262,19 +262,19 @@ fire(void *ptr)
   /* 'cast' c to a struct trickle_timer */
   loctt = (struct trickle_timer *)ptr;
 
-  PRINTF("trickle_timer fire: at %lu (was for %lu)\n",
-         (unsigned long)clock_time(),
-         (unsigned long)(loctt->ct.etimer.timer.start +
-                         loctt->ct.etimer.timer.interval));
+  //PRINTF("trickle_timer fire: at %lu (was for %lu)\n",
+  //       (unsigned long)clock_time(),
+  //       (unsigned long)(loctt->ct.etimer.timer.start +
+  //                       loctt->ct.etimer.timer.interval));
 
   if(loctt->cb) {
     /*
      * Call the protocol's TX callback, with the suppression status as an
      * argument.
      */
-    PRINTF("trickle_timer fire: Suppression Status %u (%u < %u)\n",
-           TRICKLE_TIMER_PROTO_TX_ALLOW(loctt), loctt->c, loctt->k);
-    loctt->cb(loctt->cb_arg, TRICKLE_TIMER_PROTO_TX_ALLOW(loctt));
+    //PRINTF("trickle_timer fire: Suppression Status %u (%u < %u)\n",
+    //       TRICKLE_TIMER_PROTO_TX_ALLOW(loctt), loctt->c, loctt->k);
+    //loctt->cb(loctt->cb_arg, TRICKLE_TIMER_PROTO_TX_ALLOW(loctt));
   }
 
   if(trickle_timer_is_running(loctt)) {
@@ -296,10 +296,10 @@ new_interval(struct trickle_timer *tt)
 
   /* Store the actual interval start (absolute time), we need it later */
   tt->i_start = tt->ct.etimer.timer.start;
-  PRINTF("trickle_timer new interval: at %lu, ends %lu, ",
-         (unsigned long)clock_time(),
-         (unsigned long)TRICKLE_TIMER_INTERVAL_END(tt));
-  PRINTF("t=%lu, I=%lu\n", (unsigned long)loc_clock, (unsigned long)tt->i_cur);
+  //PRINTF("trickle_timer new interval: at %lu, ends %lu, ",
+  //       (unsigned long)clock_time(),
+  //       (unsigned long)TRICKLE_TIMER_INTERVAL_END(tt));
+  //PRINTF("t=%lu, I=%lu\n", (unsigned long)loc_clock, (unsigned long)tt->i_cur);
 }
 /*---------------------------------------------------------------------------*/
 /* Functions to be called by the protocol implementation */
@@ -310,7 +310,7 @@ trickle_timer_consistency(struct trickle_timer *tt)
   if(tt->c < 0xFF) {
     tt->c++;
   }
-  PRINTF("trickle_timer consistency: c=%u\n", tt->c);
+  //PRINTF("trickle_timer consistency: c=%u\n", tt->c);
 }
 /*---------------------------------------------------------------------------*/
 void
@@ -319,7 +319,7 @@ trickle_timer_inconsistency(struct trickle_timer *tt)
   /* "If I is equal to Imin when Trickle hears an "inconsistent" transmission,
    * Trickle does nothing." */
   if(tt->i_cur != tt->i_min) {
-    PRINTF("trickle_timer inconsistency\n");
+    //PRINTF("trickle_timer inconsistency\n");
     tt->i_cur = tt->i_min;
 
     new_interval(tt);
@@ -337,12 +337,12 @@ trickle_timer_config(struct trickle_timer *tt, clock_time_t i_min,
    * 1 < Imin <= (TRICKLE_TIMER_CLOCK_MAX >> 1) + 1
    */
   if(TRICKLE_TIMER_IMIN_IS_BAD(i_min)) {
-    PRINTF("trickle_timer config: Bad Imin value\n");
+    //PRINTF("trickle_timer config: Bad Imin value\n");
     return TRICKLE_TIMER_ERROR;
   }
 
   if(tt == NULL || i_max == 0 || k == 0) {
-    PRINTF("trickle_timer config: Bad arguments\n");
+    //PRINTF("trickle_timer config: Bad arguments\n");
     return TRICKLE_TIMER_ERROR;
   }
 
@@ -353,12 +353,12 @@ trickle_timer_config(struct trickle_timer *tt, clock_time_t i_min,
    * See RFC 6206, sec 6.3 for the consequences of this situation
    */
   if(TRICKLE_TIMER_IPAIR_IS_BAD(i_min, i_max)) {
-    PRINTF("trickle_timer config: %lu << %u would exceed clock boundaries. ",
-           (unsigned long)i_min, i_max);
+    //PRINTF("trickle_timer config: %lu << %u would exceed clock boundaries. ",
+    //       (unsigned long)i_min, i_max);
 
     /* For this Imin, get the maximum sane Imax */
     i_max = max_imax(i_min);
-    PRINTF("trickle_timer config: Using Imax=%u\n", i_max);
+    //PRINTF("trickle_timer config: Using Imax=%u\n", i_max);
   }
 #endif
 
@@ -367,8 +367,8 @@ trickle_timer_config(struct trickle_timer *tt, clock_time_t i_min,
   tt->i_max_abs = i_min << i_max;
   tt->k = k;
 
-  PRINTF("trickle_timer config: Imin=%lu, Imax=%u, k=%u\n",
-         (unsigned long)tt->i_min, tt->i_max, tt->k);
+  //PRINTF("trickle_timer config: Imin=%lu, Imax=%u, k=%u\n",
+    //     (unsigned long)tt->i_min, tt->i_max, tt->k);
 
   return TRICKLE_TIMER_SUCCESS;
 }
@@ -380,7 +380,7 @@ trickle_timer_set(struct trickle_timer *tt, trickle_timer_cb_t proto_cb,
 #if TRICKLE_TIMER_ERROR_CHECKING
   /* Sanity checks */
   if(tt == NULL || proto_cb == NULL) {
-    PRINTF("trickle_timer set: Bad arguments\n");
+    //PRINTF("trickle_timer set: Bad arguments\n");
     return TRICKLE_TIMER_ERROR;
   }
 #endif
@@ -392,17 +392,17 @@ trickle_timer_set(struct trickle_timer *tt, trickle_timer_cb_t proto_cb,
   tt->i_cur = tt->i_min +
     (tt_rand() % (TRICKLE_TIMER_INTERVAL_MAX(tt) - tt->i_min + 1));
 
-  PRINTF("trickle_timer set: I=%lu in [%lu , %lu]\n", (unsigned long)tt->i_cur,
-         (unsigned long)tt->i_min,
-         (unsigned long)TRICKLE_TIMER_INTERVAL_MAX(tt));
+  //PRINTF("trickle_timer set: I=%lu in [%lu , %lu]\n", (unsigned long)tt->i_cur,
+    //     (unsigned long)tt->i_min,
+    //     (unsigned long)TRICKLE_TIMER_INTERVAL_MAX(tt));
 
   new_interval(tt);
 
-  PRINTF("trickle_timer set: at %lu, ends %lu, t=%lu in [%lu , %lu)\n",
-         (unsigned long)tt->i_start,
-         (unsigned long)TRICKLE_TIMER_INTERVAL_END(tt),
-         (unsigned long)tt->ct.etimer.timer.interval,
-         (unsigned long)tt->i_cur >> 1, (unsigned long)tt->i_cur);
+  //PRINTF("trickle_timer set: at %lu, ends %lu, t=%lu in [%lu , %lu)\n",
+    //     (unsigned long)tt->i_start,
+    //     (unsigned long)TRICKLE_TIMER_INTERVAL_END(tt),
+    //     (unsigned long)tt->ct.etimer.timer.interval,
+    //     (unsigned long)tt->i_cur >> 1, (unsigned long)tt->i_cur);
 
   return TRICKLE_TIMER_SUCCESS;
 }

@@ -42,7 +42,7 @@
  * @{
  */
 
-#include <stdio.h>
+//#include <stdio.h>
 
 #include "lib/list.h"
 #include "lib/memb.h"
@@ -80,8 +80,8 @@ static int max_time = DEFAULT_LIFETIME;
 
 #define DEBUG 0
 #if DEBUG
-#include <stdio.h>
-#define PRINTF(...) printf(__VA_ARGS__)
+//#include <stdio.h>
+//#define PRINTF(...) printf(__VA_ARGS__)
 #else
 #define PRINTF(...)
 #endif

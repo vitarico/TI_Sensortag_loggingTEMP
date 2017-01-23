@@ -29,7 +29,7 @@
  *
  */
 
-#include <stdio.h>
+//#include <stdio.h>
 #include <stddef.h>
 #include <string.h>
 
@@ -149,11 +149,11 @@ static int
 start_get(struct websocket *s)
 {
   if(websocket_http_client_get(&(s->s)) == 0) {
-    PRINTF("Out of memory error\n");
+    //PRINTF("Out of memory error\n");
     s->state = WEBSOCKET_STATE_CLOSED;
     return WEBSOCKET_ERR;
   } else {
-    PRINTF("Connecting...\n");
+    //PRINTF("Connecting...\n");
     s->state = WEBSOCKET_STATE_HTTP_REQUEST_SENT;
     return WEBSOCKET_OK;
   }
@@ -193,7 +193,7 @@ PROCESS_THREAD(websocket_process, ev, data)
           if(ret == RESOLV_STATUS_CACHED) {
 	    /* Hostname found, restart get. */
             if(s->state == WEBSOCKET_STATE_DNS_REQUEST_SENT) {
-              PRINTF("Restarting get\n");
+              //PRINTF("Restarting get\n");
               start_get(s);
             }
 	  } else {
@@ -220,7 +220,7 @@ websocket_http_client_aborted(struct websocket_http_client_state *client_state)
   if(client_state != NULL) {
     struct websocket *s = (struct websocket *)
       ((char *)client_state - offsetof(struct websocket, s));
-    PRINTF("Websocket reset\n");
+    //PRINTF("Websocket reset\n");
     s->state = WEBSOCKET_STATE_CLOSED;
     call(s, WEBSOCKET_RESET, NULL, 0);
   }
@@ -235,7 +235,7 @@ websocket_http_client_timedout(struct websocket_http_client_state *client_state)
   if(client_state != NULL) {
     struct websocket *s = (struct websocket *)
       ((char *)client_state - offsetof(struct websocket, s));
-    PRINTF("Websocket timed out\n");
+    //PRINTF("Websocket timed out\n");
     s->state = WEBSOCKET_STATE_CLOSED;
     call(s, WEBSOCKET_TIMEDOUT, NULL, 0);
   }
@@ -251,7 +251,7 @@ websocket_http_client_closed(struct websocket_http_client_state *client_state)
   if(client_state != NULL) {
     struct websocket *s = (struct websocket *)
       ((char *)client_state - offsetof(struct websocket, s));
-    PRINTF("Websocket closed.\n");
+    //PRINTF("Websocket closed.\n");
     s->state = WEBSOCKET_STATE_CLOSED;
     call(s, WEBSOCKET_CLOSED, NULL, 0);
   }
@@ -266,7 +266,7 @@ websocket_http_client_connected(struct websocket_http_client_state *client_state
   struct websocket *s = (struct websocket *)
     ((char *)client_state - offsetof(struct websocket, s));
 
-  PRINTF("Websocket connected\n");
+  //PRINTF("Websocket connected\n");
   s->state = WEBSOCKET_STATE_WAITING_FOR_HEADER;
   call(s, WEBSOCKET_CONNECTED, NULL, 0);
 }
@@ -430,13 +430,13 @@ websocket_http_client_datahandler(struct websocket_http_client_state *client_sta
         if(s->left > 0) {
           websocket_http_client_send(&s->s, (const uint8_t*)data, s->left);
         }
-        PRINTF("Got ping\n");
+        //PRINTF("Got ping\n");
         call(s, WEBSOCKET_PINGED, NULL, 0);
         s->state = WEBSOCKET_STATE_WAITING_FOR_HEADER;
       } else if(s->opcode == WEBSOCKET_OPCODE_PONG) {
           /* If the opcode is pong, we call the application to let it
            know we got a pong. */
-        PRINTF("Got pong\n");
+        //PRINTF("Got pong\n");
         call(s, WEBSOCKET_PONG_RECEIVED, NULL, 0);
         s->state = WEBSOCKET_STATE_WAITING_FOR_HEADER;
       } else if(s->opcode == WEBSOCKET_OPCODE_CLOSE) {
@@ -447,7 +447,7 @@ websocket_http_client_datahandler(struct websocket_http_client_state *client_sta
         if(s->left > 0) {
           websocket_http_client_send(&s->s, (const uint8_t*)data, s->left);
         }
-        PRINTF("websocket: got close, sending close\n");
+        //PRINTF("websocket: got close, sending close\n");
         s->state = WEBSOCKET_STATE_WAITING_FOR_HEADER;
         websocket_http_client_close(&s->s);
       } else if(s->opcode == WEBSOCKET_OPCODE_BIN ||
@@ -478,7 +478,7 @@ websocket_http_client_datahandler(struct websocket_http_client_state *client_sta
         /* Need to keep parsing the incoming data to check for more
            frames, if the incoming datalen is > than s->left. */
         if(datalen > 0) {
-          PRINTF("XXX 1 again\n");
+          //PRINTF("XXX 1 again\n");
           websocket_http_client_datahandler(client_state,
                                             data, datalen);
         }
@@ -506,7 +506,7 @@ websocket_http_client_datahandler(struct websocket_http_client_state *client_sta
         /* Need to keep parsing the incoming data to check for more
            frames, if the incoming datalen is > than len. */
         if(datalen > 0) {
-          PRINTF("XXX 2 again (datalen %d s->left %d)\n", datalen, (int)s->left);
+          //PRINTF("XXX 2 again (datalen %d s->left %d)\n", datalen, (int)s->left);
           websocket_http_client_datahandler(client_state,
                                             data, datalen);
 
@@ -559,7 +559,7 @@ websocket_open(struct websocket *s, const char *url,
   }
 
   if(s->state != WEBSOCKET_STATE_CLOSED) {
-    PRINTF("websocket_open: closing websocket before opening it again.\n");
+    //PRINTF("websocket_open: closing websocket before opening it again.\n");
     websocket_close(s);
   }
   s->callback = c;
@@ -578,7 +578,7 @@ websocket_open(struct websocket *s, const char *url,
       if(ret != RESOLV_STATUS_CACHED) {
 	resolv_query(host);
 	s->state = WEBSOCKET_STATE_DNS_REQUEST_SENT;
-	PRINTF("Resolving host...\n");
+	//PRINTF("Resolving host...\n");
 	return WEBSOCKET_OK;
       }
     }
@@ -609,27 +609,27 @@ send_data(struct websocket *s, const void *data,
   struct websocket_frame_hdr *hdr;
   struct websocket_frame_mask *mask;
 
-  PRINTF("websocket send data len %d %.*s\n", datalen, datalen, (char *)data);
+  //PRINTF("websocket send data len %d %.*s\n", datalen, datalen, (char *)data);
   if(s->state == WEBSOCKET_STATE_CLOSED ||
      s->state == WEBSOCKET_STATE_DNS_REQUEST_SENT ||
      s->state == WEBSOCKET_STATE_HTTP_REQUEST_SENT) {
     /* Trying to send data on a non-connected websocket. */
-    PRINTF("websocket send fail: not connected\n");
+    //PRINTF("websocket send fail: not connected\n");
     return -1;
   }
 
   /* We need to have 4 + 4 additional bytes for the websocket framing
      header. */
   if(4 + 4 + datalen > websocket_http_client_sendbuflen(&s->s)) {
-    PRINTF("websocket: too few bytes left (%d left, %d needed)\n",
-           websocket_http_client_sendbuflen(&s->s),
-           4 + 4 + datalen);
+    //PRINTF("websocket: too few bytes left (%d left, %d needed)\n",
+    //       websocket_http_client_sendbuflen(&s->s),
+    //       4 + 4 + datalen);
     return -1;
   }
 
   if(datalen > sizeof(buf) - 4 - 4) {
-    PRINTF("websocket: trying to send too large data chunk %d > %d\n",
-           datalen, sizeof(buf) - 4 - 4);
+    //PRINTF("websocket: trying to send too large data chunk %d > %d\n",
+    //       datalen, sizeof(buf) - 4 - 4);
     return -1;
   }
 

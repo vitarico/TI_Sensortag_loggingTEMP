@@ -32,7 +32,7 @@
 #include "elfloader-arch.h"
 #include <sys/mman.h>
 #include <fcntl.h>
-#include <stdio.h>
+//#include <stdio.h>
 
 #define R_386_NONE          0
 #define R_386_32            1
@@ -109,26 +109,26 @@ elfloader_arch_relocate(int fd, unsigned int sectionoffset, char *sectionaddress
     /*printf("elfloader-x86.c: performed relocation type S + A - P (%d)\n", type);*/
     break;
   case R_386_GOT32:
-    printf("elfloader-x86.c: unsupported relocation type G + A - P (%d)\n", type);
+    //printf("elfloader-x86.c: unsupported relocation type G + A - P (%d)\n", type);
     break;
   case R_386_PLT32:
-    printf("elfloader-x86.c: unsupported relocation type L + A - P (%d)\n", type);
+    //printf("elfloader-x86.c: unsupported relocation type L + A - P (%d)\n", type);
     break;
   case R_386_GLOB_DATA:
   case R_386_JMP_SLOT:
-    printf("elfloader-x86.c: unsupported relocation type S (%d)\n", type);
+    //printf("elfloader-x86.c: unsupported relocation type S (%d)\n", type);
     break;
   case R_386_RELATIVE:
-    printf("elfloader-x86.c: unsupported relocation type B + A (%d)\n", type);
+    //printf("elfloader-x86.c: unsupported relocation type B + A (%d)\n", type);
     break;
   case R_386_GOTOFF:
-    printf("elfloader-x86.c: unsupported relocation type S + A - GOT (%d)\n", type);
+    //printf("elfloader-x86.c: unsupported relocation type S + A - GOT (%d)\n", type);
     break;
   case R_386_GOTPC:
-    printf("elfloader-x86.c: unsupported relocation type GOT + A - P (%d)\n", type);
+    //printf("elfloader-x86.c: unsupported relocation type GOT + A - P (%d)\n", type);
     break;
   default:
-    printf("elfloader-x86.c: unknown type (%d)\n", type);
+    //printf("elfloader-x86.c: unknown type (%d)\n", type);
     break;
   }
   

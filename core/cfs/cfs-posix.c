@@ -32,7 +32,7 @@
  *
  */
 
-#include <stdio.h>
+//#include <stdio.h>
 #include <fcntl.h>
 #ifdef _MSC_VER
 #include <io.h>

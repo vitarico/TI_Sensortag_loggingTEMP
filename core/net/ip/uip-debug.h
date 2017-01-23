@@ -44,7 +44,7 @@
 
 #include "net/net-debug.h"
 #include "net/ip/uip.h"
-#include <stdio.h>
+//#include <stdio.h>
 
 void uip_debug_ipaddr_print(const uip_ipaddr_t *addr);
 

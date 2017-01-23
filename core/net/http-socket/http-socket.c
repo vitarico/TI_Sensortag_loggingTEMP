@@ -33,7 +33,7 @@
 #include "http-socket.h"
 
 #include <ctype.h>
-#include <stdio.h>
+//#include <stdio.h>
 
 #define MAX_PATHLEN 80
 #define MAX_HOSTLEN 40
@@ -207,9 +207,9 @@ parse_header_byte(struct http_socket *s, char c)
     PT_EXIT(&s->headerpt);
   } else {
     if(s->header.status_code == 0x404) {
-      printf("File not found\n");
+      //printf("File not found\n");
     } else if(s->header.status_code == 0x301 || s->header.status_code == 0x302) {
-      printf("File moved (not handled)\n");
+      //printf("File moved (not handled)\n");
     }
 
     call_callback(s, HTTP_SOCKET_ERR, (void *)&s->header, sizeof(s->header));
@@ -297,13 +297,13 @@ parse_url(const char *url, char *host, uint16_t *portptr, char *path)
   uint16_t port;
 
   if(url == NULL) {
-    printf("null url\n");
+    //printf("null url\n");
     return 0;
   }
 
   /* Don't even try to go further if the URL is empty. */
   if(strlen(url) == 0) {
-    printf("empty url\n");
+    //printf("empty url\n");
     return 0;
   }
 
@@ -405,7 +405,7 @@ event(struct tcp_socket *tcps, void *ptr,
   int len;
 
   if(e == TCP_SOCKET_CONNECTED) {
-    printf("Connected\n");
+    //printf("Connected\n");
     if(parse_url(s->url, host, &port, path)) {
       tcp_socket_send_str(tcps, s->postdata != NULL ? "POST " : "GET ");
       if(s->proxy_port != 0) {
@@ -463,15 +463,15 @@ event(struct tcp_socket *tcps, void *ptr,
   } else if(e == TCP_SOCKET_CLOSED) {
     call_callback(s, HTTP_SOCKET_CLOSED, NULL, 0);
     removesocket(s);
-    printf("Closed\n");
+    //printf("Closed\n");
   } else if(e == TCP_SOCKET_TIMEDOUT) {
     call_callback(s, HTTP_SOCKET_TIMEDOUT, NULL, 0);
     removesocket(s);
-    printf("Timedout\n");
+    //printf("Timedout\n");
   } else if(e == TCP_SOCKET_ABORTED) {
     call_callback(s, HTTP_SOCKET_ABORTED, NULL, 0);
     removesocket(s);
-    printf("Aborted\n");
+    //printf("Aborted\n");
   } else if(e == TCP_SOCKET_DATA_SENT) {
     if(s->postdata != NULL && s->postdatalen) {
       len = tcp_socket_send(tcps, s->postdata, s->postdatalen);
@@ -496,8 +496,8 @@ start_request(struct http_socket *s)
 
   if(parse_url(s->url, host, &port, path)) {
 
-    printf("url %s host %s port %d path %s\n",
-           s->url, host, port, path);
+    //printf("url %s host %s port %d path %s\n",
+      //     s->url, host, port, path);
 
     /* Check if we are to route the request through a proxy. */
     if(s->proxy_port != 0) {
