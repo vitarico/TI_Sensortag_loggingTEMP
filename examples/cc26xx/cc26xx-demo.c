@@ -136,6 +136,7 @@ extern const uint16_t raw_hum;
 
 uint16_t alight[2] = {0,0};
 uint16_t ahdc[2] = {0,0};
+uint16_t aahdc[2] = {0,0};
 
 
 static void write_byte(uint8_t data){
@@ -260,7 +261,22 @@ static void print_data(void){
     rv = ext_flash_write(CONFIG_FLASH_OFFSET, sizeof(ahdc), (uint8_t *)&ahdc);
   }
 
-  printf("EXT_FLASH_READ %x\n", ext_flash_read(CONFIG_FLASH_OFFSET, sizeof(ahdc), (uint8_t *) &ahdc));
+  printf("EXT_FLASH_READ %x\n", ext_flash_read(CONFIG_FLASH_OFFSET, sizeof(aahdc), (uint8_t *) &aahdc));
+
+  printf("After beeing stored and read again:");
+
+  //TMP
+  printf("%x\n", aahdc[0] );
+  write_byte(aahdc[0]>>8);
+  write_byte(aahdc[0]&0xFF); 
+  cc26xx_uart_write_byte(44);
+
+  //HUM
+
+  printf("%x\n", aahdc[1] );
+  write_byte(aahdc[1]>>8);
+  write_byte(aahdc[1]&0xFF); 
+  cc26xx_uart_write_byte(59);
 
 }
 
