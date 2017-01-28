@@ -48,7 +48,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdbool.h>
-//#include <stdio.h>
+#include <stdio.h>
 /*---------------------------------------------------------------------------*/
 #define DEBUG 0
 #if DEBUG
@@ -92,8 +92,8 @@ typedef struct sensor_data {
 } sensor_data_t;
 
 /* Raw data, little endian */
-static uint16_t raw_temp;
-static uint16_t raw_hum;
+uint16_t raw_temp;
+uint16_t raw_hum;
 /*---------------------------------------------------------------------------*/
 static bool success;
 static sensor_data_t data;
@@ -165,10 +165,10 @@ read_data()
     SENSOR_DESELECT();
 
     /* Store temperature */
-    raw_temp = SWAP(data.temp);
+    raw_temp=SWAP(data.temp);
 
     /* Store humidity */
-    raw_hum = SWAP(data.hum);
+    raw_hum=SWAP(data.hum); 
   }
 
   valid = success;
@@ -237,6 +237,7 @@ value(int type)
   }
   return rv;
 }
+
 /*---------------------------------------------------------------------------*/
 /**
  * \brief Configuration function for the HDC1000 sensor.

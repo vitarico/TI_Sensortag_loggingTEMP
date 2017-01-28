@@ -92,10 +92,10 @@
 #include "button-sensor.h"
 #include "board-peripherals.h"
 #include "cc26xx-uart.h"
+#
 
 #include "ti-lib.h"
-#define printf(x) 
-#define PRINTF(x)
+#include <stdio.h>
 
 /*---------------------------------------------------------------------------*/
 #define CC26XX_DEMO_LOOP_INTERVAL       CLOCK_SECOND
@@ -124,15 +124,18 @@ AUTOSTART_PROCESSES(&cc26xx_demo_process);
  * ticks + a random interval between 0 and SENSOR_READING_RANDOM ticks
  */
 #define SENSOR_READING_PERIOD CLOCK_SECOND * 10
+#define CONFIG_FLASH_OFFSET        0
 
 static struct ctimer opt_timer, hdc_timer;
+extern const uint16_t raw_temp;
+extern const uint16_t raw_hum;
 /*---------------------------------------------------------------------------*/
 
 //Arrays to store Data
 // Light
 
 uint16_t alight[2] = {0,0};
-uint16_t ahdc[4] = {0,0};
+uint16_t ahdc[2] = {0,0};
 
 
 static void write_byte(uint8_t data){
@@ -214,27 +217,50 @@ static void write_byte(uint8_t data){
 
 static void print_data(void){
 
+  int rv;
+
   //light
 
-  write_byte(alight[0]>>8);
-  write_byte(alight[0]&0xFF); 
-  cc26xx_uart_write_byte(44);
-  write_byte(alight[1]&0xFF);
-  cc26xx_uart_write_byte(59);
-  //TMP
+  //write_byte(alight[0]>>8);
+  //write_byte(alight[0]&0xFF); 
+  //cc26xx_uart_write_byte(44);
+  //write_byte(alight[1]&0xFF);
+  //cc26xx_uart_write_byte(59);
 
+  //TMP
+  printf("%x\n", ahdc[0] );
   write_byte(ahdc[0]>>8);
   write_byte(ahdc[0]&0xFF); 
   cc26xx_uart_write_byte(44);
-  write_byte(ahdc[1]&0xFF);
+
+  //HUM
+
+  printf("%x\n", ahdc[1] );
+  write_byte(ahdc[1]>>8);
+  write_byte(ahdc[1]&0xFF); 
   cc26xx_uart_write_byte(59);
 
   //HUM
 
-  write_byte(ahdc[2]>>8);
-  write_byte(ahdc[2]&0xFF); 
-  cc26xx_uart_write_byte(44);
-  write_byte(ahdc[3]&0xFF);
+  rv = ext_flash_open();
+
+  if(!rv) {
+    cc26xx_uart_write_byte(64);
+    ext_flash_close();
+    return;
+  }
+  rv = ext_flash_erase(CONFIG_FLASH_OFFSET, sizeof(ahdc));
+
+  if(!rv) {
+    printf("Error erasing flash\n");
+    cc26xx_uart_write_byte(64);
+  } 
+  else {
+
+    rv = ext_flash_write(CONFIG_FLASH_OFFSET, sizeof(ahdc), (uint8_t *)&ahdc);
+  }
+
+  printf("EXT_FLASH_READ %x\n", ext_flash_read(CONFIG_FLASH_OFFSET, sizeof(ahdc), (uint8_t *) &ahdc));
 
 }
 
@@ -250,16 +276,14 @@ get_hdc_reading()
 
   value = hdc_1000_sensor.value(HDC_1000_SENSOR_TYPE_TEMP);
   if(value != CC26XX_SENSOR_READING_ERROR) {
-    ahdc[0]=value/100;
-    ahdc[1]=value%100;
+    ahdc[0]=raw_temp;
   } else {
     //printf("HDC: Temp Read Error\n");
   }
 
   value = hdc_1000_sensor.value(HDC_1000_SENSOR_TYPE_HUMIDITY);
   if(value != CC26XX_SENSOR_READING_ERROR) {
-    ahdc[2]=value/100;
-    ahdc[3]=value%100;
+    ahdc[1]=raw_hum;
   } else {
     //printf("HDC: Humidity Read Error\n");
   }
@@ -309,8 +333,6 @@ PROCESS_THREAD(cc26xx_demo_process, ev, data)
 {
 
   PROCESS_BEGIN();
-
-  printf("CC26XX demo\n");
 
   etimer_set(&et, CC26XX_DEMO_LOOP_INTERVAL);
   init_sensor_readings();
